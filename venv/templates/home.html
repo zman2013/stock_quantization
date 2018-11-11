@@ -22,6 +22,7 @@
 
       <template>
           <div id="main" style="height:400px;"></div>
+          <div id="pe_chart" style="height:400px;"></div>
       </template>
   </div>
 </body>
@@ -53,13 +54,13 @@
                 // axios.get("https://api.nytimes.com/svc/topstories/v2/home.json?api-key=your_api_key")
                 // .then(response => {this.tableData = response.data.results})
 
-              //   axios.get("/stock_analysis")
-              //   .then(response => {
-              //       this.dates = response.data.dates
-              //       this.tableData = response.data.data
-              //   })
-              //
-              //
+                axios.get("/stock_analysis")
+                .then(response => {
+                    this.dates = response.data.dates
+                    this.tableData = response.data.data
+                })
+
+
                 },
               cellStyle({row, column, rowIndex, columnIndex}){
                 if( columnIndex == 0){
@@ -83,11 +84,11 @@
         // 显示标题，图例和空的坐标轴
         myChart.setOption({
             title: {
-                text: '异步数据加载示例'
+                text: '单季增长率'
             },
             tooltip: {},
             legend: {
-                data:['总收入季度增长率','总利润季度增长率','净利润季度增长率']
+                data:['总收入季度增长率','总利润季度增长率','净利润季度增长率','股价max','股价min']
             },
             xAxis: {
                 data: []
@@ -122,15 +123,70 @@
                 .then(response => {
                     // 填入数据
                     myChart.setOption({
-                        xAxis: [{
-                            data: response.data.q_increase_percentage.dates
-                        },{
+                        xAxis: [
+                        //     {
+                        //     data: response.data.q_increase_percentage.dates
+                        // },
+                            {
                             data: response.data.stock_price.dates
                         }
                             ],
                         series:
-                            // response.data.q_increase_percentage.data,
-                            response.data.stock_price.data,
+                            response.data.q_increase_percentage.data.concat(
+                                response.data.stock_price.data
+                            )
+
+                    });
+
+                })
+
+        //#################
+
+        // 基于准备好的dom，初始化echarts实例
+        var peChart = echarts.init(document.getElementById('pe_chart'));
+
+        // 显示标题，图例和空的坐标轴
+        peChart.setOption({
+            title: {
+                text: 'pe'
+            },
+            tooltip: {},
+            legend: {
+                data:['pe']
+            },
+            xAxis: {
+                data: []
+            },
+            yAxis : [
+                {
+                    type: 'value',
+                    name: 'pe',
+                    position: 'right',
+                    axisLabel: {
+                        formatter: '{value}'
+                    }
+                },
+            ],
+            series: [{
+                name: 'pe',
+                type: 'line',
+                data: []
+            }]
+        });
+
+        // 异步加载数据
+        axios.get("/stock_pe_chart")
+                .then(response => {
+                    // 填入数据
+                    peChart.setOption({
+                        xAxis: [
+                            {
+                            data: response.data.pe.dates
+                        }
+                            ],
+                        series:
+                            response.data.pe.data
+
                     });
 
                 })

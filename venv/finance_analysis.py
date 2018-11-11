@@ -132,14 +132,15 @@ def finance_analyse(stock_code, start_date):
                             'rd_exp': '研发费用',
                             'rd_exp_per': '研发收入比'
                             })
-    df = df.transpose()
-    df.insert(0, '类目', df.index)
 
     return df
 
 
 # 返回表格json
 def fetch_finance_data(finance_df):
+    finance_df = finance_df.transpose()
+    finance_df.insert(0, '类目', finance_df.index)
+
     jsonData = {}
     jsonData['data'] = json.loads(finance_df.to_json(orient="records"))
     jsonData['dates'] = finance_df.columns.values.tolist()
@@ -153,12 +154,29 @@ def fetch_pe_df(stock_code, start_date):
     return df
 
 
+# 调整为季度数据
+def ajust_date_to_quarter(x):
+    month = x[4:6]
+    if month == '01' or month == '02' or month == '03':
+        return x[2:4] + '03'
+    elif month == '04' or month == '05' or month == '06':
+        return x[2:4] + '06'
+    elif month == '07' or month == '08' or month == '09':
+        return x[2:4] + '09'
+    else:
+        return x[2:4] + '12'
+
+
 # 获取股价
 def fetch_stock_price_df(stock_code, start_date):
     df = ts.pro_bar(pro_api=api, ts_code=stock_code, asset='E', adj='hfq', start_date=start_date)
-    df = df[['close']]
-    df = df.transpose()
-    df.insert(0, '类目', df.index)
+    df['trade_date'] = df['trade_date'].apply(lambda x: ajust_date_to_quarter(x))
+
+    df = df[['trade_date', 'close']]
+    df_max = df.groupby('trade_date').max().rename(columns={'close': 'max'})
+    df_min = df.groupby('trade_date').min().rename(columns={'close': 'min'})
+    df = pd.merge(df_max, df_min, on='trade_date')
+
     return df
 
 
@@ -168,7 +186,13 @@ def analyse_chart(finance_df, pe_df, price_df):
     jsonData = {'q_increase_percentage': {},
                 'stock_price': {}}
 
+    price_df = pd.merge(price_df, finance_df, left_index=True, right_index=True)
+
+    finance_df = finance_df.transpose()
+    finance_df = finance_df.sort_index(axis=1, ascending=False)
+
     # 财务
+    finance_df.insert(0, '类目', finance_df.index)
     finance_df = finance_df['总收入季度增长率':'净利润季度增长率']
     jsonData['q_increase_percentage']['dates'] = finance_df.columns.values.tolist()[1:-1]
     jsonData['q_increase_percentage']['data'] = []
@@ -183,13 +207,31 @@ def analyse_chart(finance_df, pe_df, price_df):
         jsonData['q_increase_percentage']['data'].append( tmp )
 
     # 股价
+
+    price_df = price_df.transpose()
+    price_df = price_df.sort_index(axis=1, ascending=False)
+    price_df.insert(0, '类目', price_df.index)
+    price_df = price_df['max':'min']
+
     jsonData['stock_price']['dates'] = price_df.columns.values.tolist()[1:-1]
     jsonData['stock_price']['data'] = []
+    data = json.loads(price_df.to_json(orient="values"))
+
+    d = data[0]
     price_tmp = {}
-    price_tmp['name'] = '股价'
-    price_tmp['data'] = json.loads(price_df.to_json(orient="values"))
+    price_tmp['name'] = '股价max'
+    price_tmp['data'] = d[1:-1]
     price_tmp['type'] = 'line'
     price_tmp['yAxisIndex'] = 1
     jsonData['stock_price']['data'].append(price_tmp)
+    d = data[1]
+    price_tmp = {}
+    price_tmp['name'] = '股价min'
+    price_tmp['data'] = d[1:-1]
+    price_tmp['type'] = 'line'
+    price_tmp['yAxisIndex'] = 1
+    jsonData['stock_price']['data'].append(price_tmp)
+
+
 
     return jsonData
