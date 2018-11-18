@@ -223,6 +223,14 @@ def analyse_index(start_date):
     return [buy_date, buy_index, sell_date, sell_index, sh_index_df, sz_index_df]
 
 
+# 获取指数数据
+def fetch_index_df(index_code, start_date):
+    download_index(index_code, start_date)
+    index_df = read_data_frame(index_code)
+
+    return index_df
+
+
 # 画图
 def draw():
     # 下载股票数据SH

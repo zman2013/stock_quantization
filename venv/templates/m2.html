@@ -22,7 +22,11 @@
 
       <template>
           <div id="main" style="height:400px;"></div>
-          <div id="pe_chart" style="height:400px;"></div>
+          <div>主要看"M1同比-M2同比"，起参考作用，不能决定股票买入卖出</div>
+          <div>"M1同比-M2同比"，从负变为正的点，可以买入</div>
+          <div>"M1同比-M2同比"，从正变为负的点，坚决卖出</div>
+          <div>"M1同比-M2同比"，逐渐变大，考虑买入（反例：201506至201603）</div>
+          <div>"M1同比-M2同比"，逐渐变小，考虑卖出（反例：201606至201801），但风险越来越高，2018年开始持续跌</div>
       </template>
   </div>
 </body>
@@ -54,11 +58,11 @@
                 // axios.get("https://api.nytimes.com/svc/topstories/v2/home.json?api-key=your_api_key")
                 // .then(response => {this.tableData = response.data.results})
 
-                axios.get("/stock_analysis/{{stock_code}}")
-                .then(response => {
-                    this.dates = response.data.dates
-                    this.tableData = response.data.data
-                })
+                // axios.get("/stock_analysis")
+                // .then(response => {
+                //     this.dates = response.data.dates
+                //     this.tableData = response.data.data
+                // })
 
 
                 },
@@ -84,11 +88,11 @@
         // 显示标题，图例和空的坐标轴
         myChart.setOption({
             title: {
-                text: '单季增长率'
+                text: '货币供应量分析'
             },
             tooltip: {},
             legend: {
-                data:['总收入季度增长率','总利润季度增长率','净利润季度增长率','股价max','股价min']
+                data:['M0同比','M1同比','M2同比','M1同比-M2同比','上证']
             },
             xAxis: {
                 data: []
@@ -96,44 +100,40 @@
             yAxis : [
                 {
                          type: 'value',
-                         name: '财务',
+                         name: '百分比',
                          position: 'left',
                         axisLabel: {
-                            formatter: '{value} （%）'
+                            formatter: '{value} '
                         }
-                },
-                {
-                    type: 'value',
-                    name: '股价',
-                    position: 'right',
-                    axisLabel: {
-                        formatter: '{value} （￥）'
-                    }
-                },
+                },{
+                         type: 'value',
+                         name: '上证',
+                         position: 'right',
+                        axisLabel: {
+                            formatter: '{value} '
+                        }
+                }
             ],
             series: [{
-                name: '销量',
+                name: '',
                 type: 'line',
                 data: []
             }]
         });
 
         // 异步加载数据
-        axios.get("/stock_analysis_chart/{{stock_code}}")
+        axios.get("/m2_analyse_chart")
                 .then(response => {
                     // 填入数据
                     myChart.setOption({
                         xAxis: [
-                        //     {
-                        //     data: response.data.q_increase_percentage.dates
-                        // },
                             {
-                            data: response.data.stock_price.dates
+                            data: response.data.mx.dates
                         }
                             ],
                         series:
-                            response.data.q_increase_percentage.data.concat(
-                                response.data.stock_price.data
+                            response.data.mx.data.concat(
+                                response.data.index.data
                             )
 
                     });
@@ -142,54 +142,54 @@
 
         //#################
 
-        // 基于准备好的dom，初始化echarts实例
-        var peChart = echarts.init(document.getElementById('pe_chart'));
-
-        // 显示标题，图例和空的坐标轴
-        peChart.setOption({
-            title: {
-                text: 'pe'
-            },
-            tooltip: {},
-            legend: {
-                data:['pe']
-            },
-            xAxis: {
-                data: []
-            },
-            yAxis : [
-                {
-                    type: 'value',
-                    name: 'pe',
-                    position: 'left',
-                    axisLabel: {
-                        formatter: '{value}'
-                    }
-                },
-            ],
-            series: [{
-                name: 'pe',
-                type: 'line',
-                data: []
-            }]
-        });
-
-        // 异步加载数据
-        axios.get("/stock_pe_chart/{{stock_code}}")
-                .then(response => {
-                    // 填入数据
-                    peChart.setOption({
-                        xAxis: [
-                            {
-                            data: response.data.pe.dates
-                        }
-                            ],
-                        series:
-                            response.data.pe.data
-
-                    });
-
-                })
+        // // 基于准备好的dom，初始化echarts实例
+        // var peChart = echarts.init(document.getElementById('pe_chart'));
+        //
+        // // 显示标题，图例和空的坐标轴
+        // peChart.setOption({
+        //     title: {
+        //         text: 'pe'
+        //     },
+        //     tooltip: {},
+        //     legend: {
+        //         data:['pe']
+        //     },
+        //     xAxis: {
+        //         data: []
+        //     },
+        //     yAxis : [
+        //         {
+        //             type: 'value',
+        //             name: 'pe',
+        //             position: 'right',
+        //             axisLabel: {
+        //                 formatter: '{value}'
+        //             }
+        //         },
+        //     ],
+        //     series: [{
+        //         name: 'pe',
+        //         type: 'line',
+        //         data: []
+        //     }]
+        // });
+        //
+        // // 异步加载数据
+        // axios.get("/stock_pe_chart")
+        //         .then(response => {
+        //             // 填入数据
+        //             peChart.setOption({
+        //                 xAxis: [
+        //                     {
+        //                     data: response.data.pe.dates
+        //                 }
+        //                     ],
+        //                 series:
+        //                     response.data.pe.data
+        //
+        //             });
+        //
+        //         })
 
     </script>
 </html>
