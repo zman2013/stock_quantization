@@ -33,7 +33,7 @@ def fetch_m2_df():
             'Accept - Language': 'zh - CN, zh;q = 0.9, en;q = 0.8, zh - TW;q = 0.7',
             'Cache - Control': 'max - age = 0',
             'Connection': 'keep - alive',
-            'Cookie': 'u = 1;_trs_uv = jnltr7sr_6_i0kb;JSESSIONID = 8A85F7B61E83AC819148D28C94BFC1FF',
+            'Cookie': 'u = 1;_trs_uv = jnltr7sr_6_i0kb;JSESSIONID = 25EA1139EFDEBD9007F38038B96C231F',
             'Host': 'data.stats.gov.cn',
             'Upgrade - Insecure - Requests': '1',
             'User - Agent': 'Mozilla / 5.0(Macintosh'

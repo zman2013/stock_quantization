@@ -24,8 +24,10 @@ def add_quarter_data(df, label):
         else:
             this_quarter = pd.Timestamp(line['end_date'])
             last_quarter = (this_quarter - QuarterEnd(n=1)).strftime("%Y%m%d")
-            last_quarter_line = df[df.end_date == last_quarter].iloc[-1]
-            df.loc[index, quarter_label] = line[label] - last_quarter_line[label]
+            tmp = df[df.end_date == last_quarter]
+            if not tmp.empty:
+                last_quarter_line = tmp.iloc[-1]
+                df.loc[index, quarter_label] = line[label] - last_quarter_line[label]
 
         # print(line['end_date'], income_df.loc[index, quarter_label])
 
@@ -40,10 +42,13 @@ def compute_yoy(df, label):
         if start_year != line['end_date'][:4]:
             this_year = pd.Timestamp(line['end_date'])
             last_year = (this_year - DateOffset(years=1)).strftime("%Y%m%d")
-            last_year_line = df[df.end_date == last_year].iloc[-1]
-            df.loc[index, yoy_label] = (line[label] - last_year_line[label]) / last_year_line[label] * 100
+            tmp = df[df.end_date == last_year]
+            if not tmp.empty:
+                last_year_line = tmp.iloc[-1]
+                if last_year_line[label] is not None:
+                    df.loc[index, yoy_label] = (line[label] - last_year_line[label]) / last_year_line[label] * 100
 
-            print(line['end_date'], "%0.2f%%" % df.loc[index, yoy_label] )
+                    print(line['end_date'], "%0.2f%%" % df.loc[index, yoy_label] )
 
 
 # 分析股票
