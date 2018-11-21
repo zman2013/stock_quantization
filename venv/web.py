@@ -12,6 +12,7 @@ from finance_analysis import finance_analyse, analyse_chart, fetch_finance_data,
     fetch_pe_df, fetch_stock_price_df
 from analyse_index import analyse_index, fetch_index_df
 from m2 import fetch_m2_df
+from select_stock import load_good_stock_by_quarter
 
 app = Flask(__name__)
 
@@ -28,6 +29,23 @@ def home():
 @app.route('/m2')
 def m2Page():
     return render_template("m2.html")
+
+
+@app.route('/select_by_quarter_inc_view')
+def select_by_quarter_inc_view():
+    return render_template("select_by_quarter_inc.html")
+
+
+@app.route('/select_by_quarter_inc')
+def select_by_quarter_inc():
+    df = load_good_stock_by_quarter()
+
+    jsonData = {}
+    jsonData['data'] = json.loads(df.to_json(orient="records"))
+    jsonData['dates'] = df.columns.values.tolist()[0:3]
+    jsonData['dates'].reverse()
+
+    return jsonify(jsonData)
 
 
 @app.route('/stock_finance/<stock_code>')

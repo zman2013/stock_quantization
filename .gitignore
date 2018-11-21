@@ -2,3 +2,4 @@
 venv/lib/python3.7/
 venv/__pycache__
 venv/__pycache__
+venv/__pycache__/*

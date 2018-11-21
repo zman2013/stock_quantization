@@ -48,7 +48,7 @@ def compute_yoy(df, label):
                 if last_year_line[label] is not None:
                     df.loc[index, yoy_label] = (line[label] - last_year_line[label]) / last_year_line[label] * 100
 
-                    print(line['end_date'], "%0.2f%%" % df.loc[index, yoy_label] )
+                    # print(line['end_date'], "%0.2f%%" % df.loc[index, yoy_label] )
 
 
 # 分析股票
@@ -240,3 +240,4 @@ def analyse_chart(finance_df, pe_df, price_df):
 
 
     return jsonData
+
