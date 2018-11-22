@@ -31,12 +31,14 @@ def select_by_quarter():
         try:
             time.sleep(1)
             income_df = analyse_income_df(ts_code, start_date)
+            cashflow_df = analyse_cashflow(ts_code, start_date)
 
             # 判断前四条数据（即最近四个季度）：季度营收同比、季度利润增速都>10
             for income_df_index, income_df_line in income_df.iterrows():
                 if income_df_line['yoy_quarter_total_revenue'] < 10 \
                         or income_df_line['yoy_quarter_total_profit'] < 10 \
-                        or income_df_line['yoy_quarter_n_income'] < 10:
+                        or income_df_line['yoy_quarter_n_income'] < 10 \
+                        or cashflow_df.loc[income_df_index, 'n_cashflow_act'] < 0:    # 经营现金流现金流为正
                     print("bad stock[%s]" % ts_code)
                     break
                 if income_df_index == 3:
@@ -95,11 +97,21 @@ def analyse_income_df(stock_code, start_date):
     return income_df
 
 
+# 分析现金流
+def analyse_cashflow(stock_code, start_date):
+    cashflow_df = api.cashflow(ts_code=stock_code, start_date=start_date)
+    cashflow_df.drop_duplicates(subset='end_date', keep='first', inplace=True)
+    return cashflow_df
+
+
 # 加载分析完成的股票
 def load_good_stock_by_quarter():
     file_path = '/tmp/good_stocks'
     df = pd.read_csv(file_path)
+    latest_quarter_label = df.columns[2]  # 最近一个季度
+    df['latest_quarter_float'] = df[latest_quarter_label].apply(lambda value: float(value[:-2]))
+    df = df.sort_values(by='latest_quarter_float', ascending=False)
     return df
 
 
-# good_stock = select_by_quarter()
+good_stock = select_by_quarter()

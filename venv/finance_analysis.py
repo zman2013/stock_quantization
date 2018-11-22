@@ -142,13 +142,16 @@ def finance_analyse(stock_code, start_date):
 
 
 # 返回表格json
-def fetch_finance_data(finance_df):
+def fetch_finance_data(stock_code, finance_df):
     finance_df = finance_df.transpose()
     finance_df.insert(0, '类目', finance_df.index)
 
     jsonData = {}
     jsonData['data'] = json.loads(finance_df.to_json(orient="records"))
     jsonData['dates'] = finance_df.columns.values.tolist()
+
+    df = api.namechange(ts_code=stock_code, fields='ts_code,name,start_date,end_date,change_reason')
+    jsonData['stock_name'] = df.loc[0, 'name']
 
     return jsonData
 

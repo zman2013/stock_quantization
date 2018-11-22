@@ -65,7 +65,7 @@ def stock_analysis(stock_code):
     start_date = start_year + '0101'
 
     df = finance_analyse(stock_code, start_date)
-    json = fetch_finance_data(df)
+    json = fetch_finance_data(stock_code, df)
 
     return jsonify(json)
 
