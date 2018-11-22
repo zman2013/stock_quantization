@@ -114,4 +114,4 @@ def load_good_stock_by_quarter():
     return df
 
 
-good_stock = select_by_quarter()
+# good_stock = select_by_quarter()
