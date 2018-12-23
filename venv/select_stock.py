@@ -116,7 +116,7 @@ def analyse_cashflow(stock_code, start_date):
 
 # 加载分析完成的股票
 def load_good_stock_by_quarter():
-    file_path = "/Users/zman/stock/tushare/finance_data/603999.SHgood_stocks"
+    file_path = "/Users/zman/stock/tushare/finance_data/603999.SH"
     df = pd.read_csv(file_path)
     latest_quarter_label = df.columns[2]  # 最近一个季度
     df['latest_quarter_float'] = df[latest_quarter_label].apply(lambda value: float(value[:-2]))

@@ -194,11 +194,10 @@ def analyse_chart(finance_df, pe_df, price_df):
     jsonData = {'q_increase_percentage': {},
                 'stock_price': {}}
 
-    price_df = pd.merge(price_df, finance_df, left_index=True, right_index=True)
+    price_df = pd.merge(price_df, finance_df, left_index=True, right_index=True, how='left')
 
-    finance_df = finance_df.transpose()
+    finance_df = price_df.transpose()
     finance_df = finance_df.sort_index(axis=1, ascending=False)
-
     # 财务
     finance_df.insert(0, '类目', finance_df.index)
     finance_df = finance_df['总收入季度增长率':'净利润季度增长率']

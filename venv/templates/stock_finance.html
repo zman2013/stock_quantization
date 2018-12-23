@@ -82,10 +82,10 @@
 
     <script type="text/javascript">
         // 基于准备好的dom，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('main'));
+        var financeChart = echarts.init(document.getElementById('main'));
 
         // 显示标题，图例和空的坐标轴
-        myChart.setOption({
+        financeChart.setOption({
             title: {
                 text: '单季增长率'
             },
@@ -125,7 +125,7 @@
         axios.get("/stock_analysis_chart/{{stock_code}}")
                 .then(response => {
                     // 填入数据
-                    myChart.setOption({
+                    financeChart.setOption({
                         xAxis: [
                         //     {
                         //     data: response.data.q_increase_percentage.dates
