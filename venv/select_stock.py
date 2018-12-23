@@ -2,6 +2,7 @@
 # 根据财务筛选股票
 
 import time
+import os
 
 import tushare as ts
 import pandas as pd
@@ -28,10 +29,18 @@ def select_by_quarter():
 #     遍历每一个股票（即：每一行）
     for index, line in df.iterrows():
         ts_code = line['ts_code']
+
+        file_dir = "/Users/zman/stock/tushare/finance_data/"+ts_code
+        if not os.path.exists(file_dir):
+            os.makedirs(file_dir)
+
         try:
             time.sleep(1)
             income_df = analyse_income_df(ts_code, start_date)
             cashflow_df = analyse_cashflow(ts_code, start_date)
+
+            income_df.to_csv(file_dir+"/income_df", index=False)
+            cashflow_df.to_csv(file_dir + "/cashflow_df", index=False)
 
             # 判断前四条数据（即最近四个季度）：季度营收同比、季度利润增速都>10
             for income_df_index, income_df_line in income_df.iterrows():
@@ -64,6 +73,7 @@ def select_by_quarter():
                     this_year = int(time.strftime("%Y"))
                     pe_start_date = str(this_year) + '0101'
                     pe_df = api.daily_basic(ts_code=ts_code, start_date=pe_start_date)
+                    cashflow_df.to_csv(file_dir + "/pe_df", index=False)
                     stock_info['pe'] = "%0.1f" % pe_df.loc[0, 'pe']
 
                     good_stocks.append(stock_info)
@@ -75,7 +85,7 @@ def select_by_quarter():
 
     df = pd.DataFrame(good_stocks)
 
-    df.to_csv("/tmp/good_stocks", index=False)
+    df.to_csv(file_dir+"good_stocks", index=False)
 
     return good_stocks
 
@@ -106,7 +116,7 @@ def analyse_cashflow(stock_code, start_date):
 
 # 加载分析完成的股票
 def load_good_stock_by_quarter():
-    file_path = '/tmp/good_stocks'
+    file_path = "/Users/zman/stock/tushare/finance_data/603999.SHgood_stocks"
     df = pd.read_csv(file_path)
     latest_quarter_label = df.columns[2]  # 最近一个季度
     df['latest_quarter_float'] = df[latest_quarter_label].apply(lambda value: float(value[:-2]))

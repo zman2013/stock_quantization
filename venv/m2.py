@@ -10,6 +10,8 @@ import json
 
 # 从国家统计局数据库获取m0 m1 m2的dataframe格式数据
 def fetch_m2_df():
+
+
     df = pd.DataFrame({'A1B0101_sj': [],
                        'A1B0102_sj': [],
                        'A1B0103_sj': [],
@@ -18,29 +20,62 @@ def fetch_m2_df():
                        'A1B0106_sj': [],
                        })
 
+    # 必须分三步才能获取长时间的数据
+    # 请求主页，获取JSESSIONID和u
     url = "http://data.stats.gov.cn/easyquery.htm"
+    para = {'cn':'A01'}
+    header = {
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7',
+            'Cache-Control': 'max-age=0',
+            'Connection': 'keep-alive',
+            'Host': 'data.stats.gov.cn',
+            'Upgrade-Insecure-Requests': '1',
+            # 'Referer': 'http://data.stats.gov.cn/easyquery.htm?cn=A01',
+            'User-Agent': 'Mozilla/5.0(Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36',
+            # 'X-Requested-With': 'XMLHttpRequest'
+    }
+    print(url)
+    print(header)
+    print(para)
+    r = requests.get(url, params=para, headers=header)
+    print(r.status_code)
+    print(r.headers)
+    print(r.content)
+
+    # 请求m2主页
+    header['Cookie'] = 'JSESSIONID=' + r.cookies.get_dict()['JSESSIONID']+';u='+r.cookies.get_dict()['u']
+    para = {'m': 'QueryData',
+            'dbcode': 'hgyd',
+            'rowcode': 'zb',
+            'colcode': 'sj',
+            'wds': '[]',
+            'dfwds': '[{"wdcode":"zb","valuecode":"A0D01"}]',
+            'k1': int(time.time()) * 1000}
+    print(url)
+    print(header)
+    print(para)
+    r = requests.post(url, params=para, headers=header)
+    print(r.status_code)
+    print(r.headers)
+    print(r.content)
+
+    # 请求长期的m2数据
     para = {'m': 'QueryData',
             'dbcode': 'hgyd',
             'rowcode': 'zb',
             'colcode': 'sj',
             'wds': '[]',
             'dfwds': '[{"wdcode":"sj","valuecode":"LAST160"}]',
-            'k1': 1542116142076}
-    # cookie可能过期导致获取的数据不正确，此时重新在浏览器中获取新的cookie
-    header = {
-            'Accept': 'text / html, application / xhtml + xml, application / xml;q = 0.9, image / webp, image / apng, * / *;q = 0.8',
-            'Accept - Encoding': 'gzip, deflate',
-            'Accept - Language': 'zh - CN, zh;q = 0.9, en;q = 0.8, zh - TW;q = 0.7',
-            'Cache - Control': 'max - age = 0',
-            'Connection': 'keep - alive',
-            'Cookie': 'u = 1;_trs_uv = jnltr7sr_6_i0kb;JSESSIONID = 25EA1139EFDEBD9007F38038B96C231F',
-            'Host': 'data.stats.gov.cn',
-            'Upgrade - Insecure - Requests': '1',
-            'User - Agent': 'Mozilla / 5.0(Macintosh'
-    }
-
+            'k1': int(time.time()) * 1000}
+    print(url)
+    print(header)
+    print(para)
     r = requests.get(url, params=para, headers=header)
-    print(r.cookies.get_dict())
+    print(r.status_code)
+    print(r.headers)
+    print(r.content)
 
     A1B0101_sj = {}
     A1B0102_sj = {}
@@ -55,17 +90,17 @@ def fetch_m2_df():
 
         [item, code, date] = code.split(".")
 
-        if code == 'A1B0101_sj':
+        if code == 'A0D0101_sj':    # 货币和准货币(M2)供应量_期末值(亿元)
             A1B0101_sj[date] = value
-        elif code == 'A1B0102_sj':
+        elif code == 'A0D0102_sj':  # 货币和准货币(M2)供应量_同比增长(%)
             A1B0102_sj[date] = value
-        elif code == 'A1B0103_sj':
+        elif code == 'A0D0103_sj':  # 货币(M1)供应量_期末值(亿元)
             A1B0103_sj[date] = value
-        elif code == 'A1B0104_sj':
+        elif code == 'A0D0104_sj':  # 货币(M1)供应量_同比增长(%)
             A1B0104_sj[date] = value
-        elif code == 'A1B0105_sj':
+        elif code == 'A0D0105_sj':  # 流通中现金(M0)供应量_期末值(亿元)
             A1B0105_sj[date] = value
-        elif code == 'A1B0106_sj':
+        elif code == 'A0D0106_sj':  # 流通中现金(M0)供应量_同比增长(%)
             A1B0106_sj[date] = value
 
     s1 = pd.Series(A1B0101_sj)
@@ -98,4 +133,5 @@ def fetch_m2_df():
 
 
 
-fetch_m2_df()
+# df = fetch_m2_df()
+# print( df )
