@@ -78,9 +78,9 @@ def stock_analysis_chart(stock_code):
 
     df = finance_analyse(stock_code, start_date)
     pe_df = fetch_pe_df(stock_code, start_date)
-    stock_price_df = fetch_stock_price_df(stock_code, start_date)
+    [stock_price_max_min_df, stock_price_df] = fetch_stock_price_df(stock_code, start_date)
 
-    json = analyse_chart(df, pe_df, stock_price_df)
+    json = analyse_chart(df, pe_df, stock_price_df, stock_price_max_min_df)
     return jsonify(json)
 
 

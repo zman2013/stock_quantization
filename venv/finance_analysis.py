@@ -178,29 +178,30 @@ def ajust_date_to_quarter(x):
 # 获取股价
 def fetch_stock_price_df(stock_code, start_date):
     df = ts.pro_bar(pro_api=api, ts_code=stock_code, asset='E', adj='hfq', start_date=start_date)
+
     df['trade_date'] = df['trade_date'].apply(lambda x: ajust_date_to_quarter(x))
 
     df = df[['trade_date', 'close']]
     df_max = df.groupby('trade_date').max().rename(columns={'close': 'max'})
     df_min = df.groupby('trade_date').min().rename(columns={'close': 'min'})
-    df = pd.merge(df_max, df_min, on='trade_date')
+    df_max_min = pd.merge(df_max, df_min, on='trade_date')
 
-    return df
+    return [df, df_max_min]
 
 
 # 分析股票
-def analyse_chart(finance_df, pe_df, price_df):
+def analyse_chart(finance_df, pe_df, stock_price_max_min_df, price_df ):
 
     jsonData = {'q_increase_percentage': {},
                 'stock_price': {}}
 
-    price_df = pd.merge(price_df, finance_df, left_index=True, right_index=True, how='left')
+    merged_df = pd.merge(stock_price_max_min_df, finance_df, left_index=True, right_index=True, how='left')
 
-    finance_df = price_df.transpose()
-    finance_df = finance_df.sort_index(axis=1, ascending=False)
+    merged_df = merged_df.transpose()
+    merged_df = merged_df.sort_index(axis=1, ascending=False)
     # 财务
-    finance_df.insert(0, '类目', finance_df.index)
-    finance_df = finance_df['总收入季度增长率':'净利润季度增长率']
+    merged_df.insert(0, '类目', merged_df.index)
+    finance_df = merged_df['总收入季度增长率':'净利润季度增长率']
     jsonData['q_increase_percentage']['dates'] = finance_df.columns.values.tolist()[1:-1]
     jsonData['q_increase_percentage']['data'] = []
     data = json.loads(finance_df.to_json(orient="values"))
@@ -211,18 +212,14 @@ def analyse_chart(finance_df, pe_df, price_df):
         tmp['data'] = d[1:-1]
         tmp['type'] = 'line'
         tmp['yAxisIndex'] = 0
+        tmp['xAxisIndex'] = 0
         jsonData['q_increase_percentage']['data'].append( tmp )
 
     # 股价
-
-    price_df = price_df.transpose()
-    price_df = price_df.sort_index(axis=1, ascending=False)
-    price_df.insert(0, '类目', price_df.index)
-    price_df = price_df['max':'min']
-
-    jsonData['stock_price']['dates'] = price_df.columns.values.tolist()[1:-1]
+    stock_price_max_min_df = merged_df['max':'min']
+    jsonData['stock_price']['dates'] = stock_price_max_min_df.columns.values.tolist()[1:-1]
     jsonData['stock_price']['data'] = []
-    data = json.loads(price_df.to_json(orient="values"))
+    data = json.loads(stock_price_max_min_df.to_json(orient="values"))
 
     d = data[0]
     price_tmp = {}
@@ -230,6 +227,7 @@ def analyse_chart(finance_df, pe_df, price_df):
     price_tmp['data'] = d[1:-1]
     price_tmp['type'] = 'line'
     price_tmp['yAxisIndex'] = 1
+    price_tmp['xAxisIndex'] = 0
     jsonData['stock_price']['data'].append(price_tmp)
     d = data[1]
     price_tmp = {}
@@ -237,9 +235,23 @@ def analyse_chart(finance_df, pe_df, price_df):
     price_tmp['data'] = d[1:-1]
     price_tmp['type'] = 'line'
     price_tmp['yAxisIndex'] = 1
+    price_tmp['xAxisIndex'] = 0
     jsonData['stock_price']['data'].append(price_tmp)
 
-
+    # 股价日线
+    price_df = price_df.transpose()
+    price_df = price_df.sort_index(axis=1, ascending=False)
+    price_df = price_df['close':]
+    data = json.loads(price_df.to_json(orient="values"))
+    d = data[0]
+    price_tmp = {}
+    price_tmp['name'] = '股价'
+    price_tmp['data'] = d[1:-1]
+    price_tmp['type'] = 'line'
+    price_tmp['yAxisIndex'] = 1
+    price_tmp['xAxisIndex'] = 1
+    jsonData['stock_price']['data'].append(price_tmp)
+    jsonData['stock_price']['dates2'] = price_df.columns.values.tolist()[1:-1]
 
     return jsonData
 
