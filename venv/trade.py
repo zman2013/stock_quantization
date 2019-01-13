@@ -7,7 +7,7 @@ from stock import Stock
 
 # 初始资金
 class Account:
-    cash = 10000
+    cash = 1000
     suggest_buy_times = 0
     suggest_sell_times = 0
     stock = {}

@@ -107,11 +107,12 @@ def analyse(sh_index_code, sz_index_code, sh_index_df, sz_index_df):
 
 # 判断是否为关键点位：'buy' 'sell' 'hold'
 def check_point(index, index_df):
-    data = index_df[index: index + 60]
+    data = index_df[index: index + 40]
 
     max_line = data.loc[data['close'].idxmax()]
     min_line = data.loc[data['close'].idxmin()]
 
+    # 判断买入
     if max_line['trade_date'] > min_line['trade_date']:  # 最高点在最低点之后
         if max_line['trade_date'] == data.iloc[0]['trade_date']:  # 最高点就是今天
             # print( "max date %s price %0.2f, min date %s price %0.2f" % (max_line['trade_date'], max_line['close'], min_line['trade_date'], min_line['close']))
@@ -125,7 +126,7 @@ def check_point(index, index_df):
 
     delta = (max_line['close'] - min_line['close']) / max_line['close']
     if max_line['trade_date'] < min_line['trade_date']:     # 最高点在最低点之前
-        if delta > 0.07:                                    # 跌幅 > 6%
+        if delta > 0.091:                                    # 跌幅 > 9.1%
             if min_line['trade_date'] == data.iloc[0]['trade_date']:  # 最低点就是今天
                 return 'sell'
 

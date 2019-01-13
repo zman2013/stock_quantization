@@ -65,6 +65,7 @@ def download_index(index_code, start_date=None):
 
 # 分析股票，并进行交易
 def analyse(stock_code, sh_index_code, sz_index_code, stock_df, sh_index_df, sz_index_df):
+    stock_df['zichan'] = 0
     account = Account()
     account.stock[stock_code] = Stock()
 
@@ -106,7 +107,9 @@ def analyse(stock_code, sh_index_code, sz_index_code, stock_df, sh_index_df, sz_
             else:
                 print("%s %s sel %0.2f on price %0.2f, zichan %0.2f" % (data['trade_date'], stock_code, vol, data['close'], account.cash ))
 
-    return [account, buy_date, buy_price, sell_date, sell_price]
+        # 给资产赋值
+        stock_df.iloc[index, -1] = account.cash + account.stock[stock_code].vol * data['close']
+    return [account, buy_date, buy_price, sell_date, sell_price, stock_df]
 
 
 # 判断是否为关键点位：'buy' 'sell' 'hold'
@@ -129,7 +132,7 @@ def check_point(index, index_df):
 
     delta = (max_line['close'] - min_line['close']) / max_line['close']
     if max_line['trade_date'] < min_line['trade_date']:     # 最高点在最低点之前
-        if delta > 0.07:                                    # 跌幅 > 6%
+        if delta > 0.091:                                    # 跌幅 > 6%
             if min_line['trade_date'] == data.iloc[0]['trade_date']:  # 最低点就是今天
                 return 'sell'
 
@@ -150,7 +153,7 @@ def check_point(index, index_df):
 
 
 # 画出指数历史曲线
-def draw_index_history(stock_code):
+def draw_index_history(stock_code, label, color):
     file_path = '/tmp/' + stock_code + '.csv'
     df = pd.read_csv(file_path)
 
@@ -159,7 +162,7 @@ def draw_index_history(stock_code):
     df.set_index(date_index, inplace=True)
     df = df.sort_index(ascending=True)
     plot = df['close']
-    plot.plot(zorder=1, c='333', label='index', legend=True)
+    plot.plot(zorder=1, c=color, label=label, legend=True)
 
 
 # 画出股票历史曲线
@@ -173,6 +176,16 @@ def draw_stock_price_history(stock_code):
     df = df.sort_index(ascending=True)
     plot = df['close']
     plot.plot(zorder=2, c='gray', secondary_y=True, label='stock', legend=True)
+
+
+# 画出资产历史曲线
+def draw_zichan(zichan_df):
+    # 划线
+    date_index = pd.to_datetime(zichan_df['trade_date'], format='%Y%m%d')
+    zichan_df.set_index(date_index, inplace=True)
+    zichan_df = zichan_df.sort_index(ascending=True)
+    plot = zichan_df['zichan']
+    plot.plot(zorder=2, c='y', secondary_y=True, label='zichan', legend=True)
 
 
 # 画出交易日期和价格
@@ -208,7 +221,8 @@ def repair_stock_data(stock_df, index_df):
 
 
 # 下载股票数据SH
-stock_code = '600066.SH'    #宇通
+stock_code = '000651.SZ'    #格力
+# stock_code = '600066.SH'    #宇通
 # stock_code = '601398.SH'    #工行
 # stock_code = '600104.SH'    #上汽
 # stock_code = '002624.SZ'
@@ -224,7 +238,7 @@ sz_index_code = '399001.SZ' #深指
 # sz_index_code = '000001.SH' #上证
 # index_code = '399102.SZ' #创业板
 # start_date = '20060101'
-start_date = '20170601'
+start_date = '20110601'
 download_stock(stock_code, start_date)
 download_index(sh_index_code, start_date)
 download_index(sz_index_code, start_date)
@@ -240,12 +254,13 @@ plt.rcParams['axes.unicode_minus'] = False #用来正常显示负号
 # 设置图片大小，宽高
 plt.rcParams['figure.figsize'] = (30.0, 6.0)
 
-[account, buy_date, buy_price, sell_date, sell_price] = analyse(stock_code, sh_index_code, sz_index_code, stock_df, sh_index_df, sz_index_df)
+[account, buy_date, buy_price, sell_date, sell_price, zichan_df] = analyse(stock_code, sh_index_code, sz_index_code, stock_df, sh_index_df, sz_index_df)
 
-draw_index_history(sh_index_code)
-draw_index_history(sz_index_code)
+draw_index_history(sh_index_code, 'sh_index', '000')
+draw_index_history(sz_index_code, 'sz_index', '999')
 draw_stock_price_history(stock_code)
 draw_trade_point(buy_date, buy_price, sell_date, sell_price)
+draw_zichan(zichan_df)
 
 print( account.cash )
 

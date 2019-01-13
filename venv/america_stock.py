@@ -38,7 +38,7 @@ def load_downjones():
 
 
 # 分析股票，并进行交易
-def analyse( index_df ):
+def analyse( index_df, buy_analyse_interval):
     stock = Stock()
     account = Account()
     stock_code = 'america'
@@ -52,10 +52,10 @@ def analyse( index_df ):
     sell_index = []
 
     # 从最早时间点向后遍历股票，遇到关键点位就进行操作
-    for index in range(len(index_df)-80, 0, -1):
+    for index in range(len(index_df)-80, -1, -1):
         data = index_df.iloc[index]
 
-        index_check_result = check_point( index, index_df)
+        index_check_result = check_point( index, index_df, buy_analyse_interval)
 
         if index_check_result != 'hold':
             stock.sh_index_point = index_check_result
@@ -68,10 +68,10 @@ def analyse( index_df ):
             stock.sh_index_point = 'hold'
             # simulation
             vol = account.buy(stock_code, data['close'])
-            if vol > 0:
-                print("%s %s buy %0.2f on price %0.2f, zichan %0.2f" % (data['trade_date'], stock_code, vol, data['close'],
-                                                                    account.cash + account.stock[stock_code].vol * data[
-                                                                        'close']))
+            # if vol > 0:
+            #     print("%s %s buy %0.2f on price %0.2f, zichan %0.2f" % (data['trade_date'], stock_code, vol, data['close'],
+            #                                                         account.cash + account.stock[stock_code].vol * data[
+            #                                                             'close']))
         elif stock.sh_index_point == 'sell':
             # if vol != 0:
             sell_date.append(data['trade_date'])
@@ -80,11 +80,11 @@ def analyse( index_df ):
             stock.sh_index_point = 'hold'
             # simulation
             vol = account.sell(stock_code, data['close'])
-            if vol > 0:
-                if account.stock[stock_code].vol > 0:
-                    print("%s %s sel %0.2f on price %0.2f, zichan %0.2f" % (data['trade_date'], stock_code, vol, data['close'], account.cash + account.stock[stock_code].vol * data['close']))
-                else:
-                    print("%s %s sel %0.2f on price %0.2f, zichan %0.2f" % (data['trade_date'], stock_code, vol, data['close'], account.cash ))
+            # if vol > 0:
+            #     if account.stock[stock_code].vol > 0:
+            #         print("%s %s sel %0.2f on price %0.2f, zichan %0.2f" % (data['trade_date'], stock_code, vol, data['close'], account.cash + account.stock[stock_code].vol * data['close']))
+            #     else:
+            #         print("%s %s sel %0.2f on price %0.2f, zichan %0.2f" % (data['trade_date'], stock_code, vol, data['close'], account.cash ))
         # 给资产赋值
         index_df.iloc[index, -1] = account.cash + account.stock[stock_code].vol * data['close']
 
@@ -92,8 +92,8 @@ def analyse( index_df ):
 
 
 # 判断是否为关键点位：'buy' 'sell' 'hold'
-def check_point(index, index_df):
-    data = index_df[index: index + 57]
+def check_point(index, index_df, buy_analyse_interval):
+    data = index_df[index: index + buy_analyse_interval]
 
     max_line = data.loc[data['close'].idxmax()]
     min_line = data.loc[data['close'].idxmin()]
@@ -144,40 +144,45 @@ def check_point(index, index_df):
     return 'hold'
 
 
-index_df = pd.read_csv(filepath_or_buffer="/Users/zman/PycharmProjects/tushare/venv/data/Dowjones_formatted.csv")
-index_df['zichan'] = 0
-index_df = index_df.drop(columns='Unnamed: 0')
-index_df = index_df.sort_index(axis=0, ascending=False)
-analyse(index_df)
+def loop():
 
-index_df.to_csv(path_or_buf="/Users/zman/PycharmProjects/tushare/venv/data/Dowjones_calculated.csv")
+    for buy_analyse_interval in range(5, 40):
 
-index_df = pd.read_csv(filepath_or_buffer="/Users/zman/PycharmProjects/tushare/venv/data/Dowjones_calculated.csv" )
+        index_df = pd.read_csv(filepath_or_buffer="/Users/zman/PycharmProjects/tushare/venv/data/Dowjones_formatted.csv")
+        index_df['zichan'] = 0
+        index_df = index_df.drop(columns='Unnamed: 0')
+        index_df = index_df.sort_index(axis=0, ascending=False)
+        analyse(index_df, buy_analyse_interval)
 
-date_index = pd.to_datetime(index_df['trade_date'], format='%Y-%m-%d')
-index_df.set_index(date_index, inplace=True)
+        index_df.to_csv(path_or_buf="/Users/zman/PycharmProjects/tushare/venv/data/Dowjones_calculated.csv")
 
-index_df['close'] = index_df['close'] / 40.94
-index_df['zichan'] = index_df['zichan'] / 10000
+        index_df = pd.read_csv(filepath_or_buffer="/Users/zman/PycharmProjects/tushare/venv/data/Dowjones_calculated.csv" )
 
-plt.rcParams['axes.unicode_minus'] = False #用来正常显示负号
-# 设置图片大小，宽高
-plt.rcParams['figure.figsize'] = (100.0, 6.0)
+        date_index = pd.to_datetime(index_df['trade_date'], format='%Y-%m-%d')
+        index_df.set_index(date_index, inplace=True)
 
-fig1 = plt.figure(figsize=(100, 6))
-ax1 = fig1.add_subplot(1, 1, 1)
-ax1.xaxis.set_major_formatter(mdate.DateFormatter('%Y-%m-%d')) #设置时间标签显示格式
+        index_df['close'] = index_df['close'] / 40.94
+        index_df['zichan'] = index_df['zichan'] / 1000
 
-plt.xticks(pd.date_range('1896-05-26', '2016-01-07', freq='5Y'))
+        print("buy_analyse_interval %d final shouyi: %0.2f" % (buy_analyse_interval,index_df['zichan'][0] ))
 
+        # plt.rcParams['axes.unicode_minus'] = False #用来正常显示负号
+        # # 设置图片大小，宽高
+        # plt.rcParams['figure.figsize'] = (100.0, 6.0)
+        #
+        # fig1 = plt.figure(figsize=(100, 6))
+        # ax1 = fig1.add_subplot(1, 1, 1)
+        # ax1.xaxis.set_major_formatter(mdate.DateFormatter('%Y-%m-%d')) #设置时间标签显示格式
+        #
+        # plt.xticks(pd.date_range('1896-05-26', '2016-01-07', freq='5Y'))
+        #
+        # plot = index_df['close']
+        # plot.plot(zorder=0, c='r', secondary_y=False, label='index', legend=True)
+        # plot = index_df['zichan']
+        # plot.plot(zorder=1, c='g', secondary_y=False, label='zichan', legend=True)
+        #
+        # plt.grid(linestyle='-.')
+        # plt.legend(loc='upper left')
+        # plt.show()
 
-
-plot = index_df['close']
-plot.plot(zorder=0, c='r', secondary_y=False, label='index', legend=True)
-plot = index_df['zichan']
-plot.plot(zorder=1, c='g', secondary_y=False, label='zichan', legend=True)
-
-plt.grid(linestyle='-.')
-plt.legend(loc='upper left')
-plt.show()
-
+loop()

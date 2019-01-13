@@ -171,7 +171,7 @@ def m2_analyse_chart():
 @app.route('/index_analyse_chart')
 def index_analyse_chart():
     this_year = int(time.strftime("%Y"))
-    start_year = str(this_year - 1)
+    start_year = str(this_year - 2)
     start_date = start_year + '0101'
     [buy_date, buy_index, sell_date, sell_index, sh_index_df, sz_index_df] = analyse_index(start_date)
 
