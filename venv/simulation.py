@@ -114,7 +114,7 @@ def analyse(stock_code, sh_index_code, sz_index_code, stock_df, sh_index_df, sz_
 
 # 判断是否为关键点位：'buy' 'sell' 'hold'
 def check_point(index, index_df):
-    data = index_df[index: index + 60]
+    data = index_df[index: index + 18]
 
     max_line = data.loc[data['close'].idxmax()]
     min_line = data.loc[data['close'].idxmin()]
@@ -233,12 +233,12 @@ stock_code = '000651.SZ'    #格力
 # stock_code = '399001.SZ'
 # index_code = '000001.SH'
 sh_index_code = '000001.SH' #上证
-# sh_index_code = '399001.SZ' #深指
-sz_index_code = '399001.SZ' #深指
-# sz_index_code = '000001.SH' #上证
+sh_index_code = '000651.SZ' #深指
+# sz_index_code = '399001.SZ' #深指
+sz_index_code = '000651.SZ' #上证
 # index_code = '399102.SZ' #创业板
 # start_date = '20060101'
-start_date = '20110601'
+start_date = '19960601'
 download_stock(stock_code, start_date)
 download_index(sh_index_code, start_date)
 download_index(sz_index_code, start_date)
