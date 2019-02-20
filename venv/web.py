@@ -13,6 +13,7 @@ from finance_analysis import finance_analyse, analyse_chart, fetch_finance_data,
 from analyse_index import analyse_index, fetch_index_df
 from m2 import fetch_m2_df
 from select_stock import load_good_stock_by_quarter
+from simulation import repair_stock_data, fetch_stock_daily_price_df, fetch_index_daily_df
 
 app = Flask(__name__)
 
@@ -108,6 +109,39 @@ def stock_pe_chart(stock_code):
         tmp['data'] = d
         tmp['type'] = 'line'
         jsonData['pe']['data'].append( tmp )
+
+    return jsonify(jsonData)
+
+
+@app.route('/stock_chart/<stock_code>')
+def stock_chart(stock_code):
+    this_year = int(time.strftime("%Y"))
+    start_year = str(this_year - 2)
+    start_date = start_year + '0101'
+
+    # 下载上证指数
+    index_df = fetch_index_daily_df('000001.SH', start_date)
+    # 下载股票数据
+    stock_price_df = fetch_stock_daily_price_df(stock_code, start_date)
+    # 补齐股票数据
+    stock_price_df = repair_stock_data(stock_price_df, index_df)
+
+    stock_price_df.set_index(stock_price_df['trade_date'], inplace=True)
+    stock_price_df = stock_price_df[['close']]
+    stock_price_df = stock_price_df.transpose()
+    stock_price_df = stock_price_df.sort_index(axis=1, ascending=False)
+
+    jsonData = {'stock': {} }
+    jsonData['stock']['dates'] = stock_price_df.columns.values.tolist()
+    jsonData['stock']['data'] = []
+
+    data = json.loads(stock_price_df.to_json(orient="values"))
+    for d in data:
+        tmp = {}
+        tmp['name'] = 'stock'
+        tmp['data'] = d
+        tmp['type'] = 'line'
+        jsonData['stock']['data'].append( tmp )
 
     return jsonify(jsonData)
 

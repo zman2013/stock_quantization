@@ -21,6 +21,13 @@ from stock import Stock
 
 
 # 格力电器
-stock_code = "000651.SZ"
-download_stock(stock_code=stock_code, start_date="19960101")
+# stock_code = "000651.SZ"
+# download_stock(stock_code=stock_code, start_date="19960101")
+
+stock_code = "000001.SH" #上证
+# download_index(index_code=stock_code, start_date="19960101")
 simulate(stock_code)
+
+# stock_code = "000016.SH" #上证50
+# download_index(index_code=stock_code, start_date="20060101")
+# simulate(stock_code)

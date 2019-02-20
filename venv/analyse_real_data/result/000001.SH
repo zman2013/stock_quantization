@@ -1,118 +1,78 @@
-/Users/zman/PycharmProjects/tushare/venv/bin/python /Users/zman/PycharmProjects/tushare/venv/analyse_real_data/simulate.py
-buy_analyse_interval 5 final shouyi: 36.46
-buy_analyse_interval 6 final shouyi: 51.36
-buy_analyse_interval 7 final shouyi: 66.59
-buy_analyse_interval 8 final shouyi: 113.73
-buy_analyse_interval 9 final shouyi: 144.96
-buy_analyse_interval 10 final shouyi: 157.79
-buy_analyse_interval 11 final shouyi: 157.45
-buy_analyse_interval 12 final shouyi: 130.63
-buy_analyse_interval 13 final shouyi: 134.59
-buy_analyse_interval 14 final shouyi: 136.10
-buy_analyse_interval 15 final shouyi: 145.05
-buy_analyse_interval 16 final shouyi: 167.30
-buy_analyse_interval 17 final shouyi: 211.70
-buy_analyse_interval 18 final shouyi: 228.06
-buy_analyse_interval 19 final shouyi: 215.40
-buy_analyse_interval 20 final shouyi: 208.68
-buy_analyse_interval 21 final shouyi: 190.73
-buy_analyse_interval 22 final shouyi: 132.97
-buy_analyse_interval 23 final shouyi: 126.07
-buy_analyse_interval 24 final shouyi: 132.10
-buy_analyse_interval 25 final shouyi: 117.06
-buy_analyse_interval 26 final shouyi: 105.32
-buy_analyse_interval 27 final shouyi: 95.05
-buy_analyse_interval 28 final shouyi: 92.00
-buy_analyse_interval 29 final shouyi: 102.25
-buy_analyse_interval 30 final shouyi: 88.70
-buy_analyse_interval 31 final shouyi: 73.99
-buy_analyse_interval 32 final shouyi: 72.09
-buy_analyse_interval 33 final shouyi: 64.69
-buy_analyse_interval 34 final shouyi: 56.40
-buy_analyse_interval 35 final shouyi: 62.38
-buy_analyse_interval 36 final shouyi: 58.62
-buy_analyse_interval 37 final shouyi: 56.51
-buy_analyse_interval 38 final shouyi: 54.77
-buy_analyse_interval 39 final shouyi: 52.50
-buy_analyse_interval 40 final shouyi: 54.42
-buy_analyse_interval 41 final shouyi: 53.06
-buy_analyse_interval 42 final shouyi: 54.51
-buy_analyse_interval 43 final shouyi: 50.01
-buy_analyse_interval 44 final shouyi: 48.28
-buy_analyse_interval 45 final shouyi: 52.65
-buy_analyse_interval 46 final shouyi: 55.45
-buy_analyse_interval 47 final shouyi: 57.74
-buy_analyse_interval 48 final shouyi: 61.12
-buy_analyse_interval 49 final shouyi: 56.29
-buy_analyse_interval 50 final shouyi: 43.52
-buy_analyse_interval 51 final shouyi: 42.84
-buy_analyse_interval 52 final shouyi: 44.49
-buy_analyse_interval 53 final shouyi: 49.62
-buy_analyse_interval 54 final shouyi: 45.79
-buy_analyse_interval 55 final shouyi: 50.16
-buy_analyse_interval 56 final shouyi: 59.58
-buy_analyse_interval 57 final shouyi: 58.16
-buy_analyse_interval 58 final shouyi: 54.34
-buy_analyse_interval 59 final shouyi: 51.76
-buy_analyse_interval 60 final shouyi: 50.91
-buy_analyse_interval 61 final shouyi: 55.62
-buy_analyse_interval 62 final shouyi: 55.62
-buy_analyse_interval 63 final shouyi: 53.58
-buy_analyse_interval 64 final shouyi: 50.88
-buy_analyse_interval 65 final shouyi: 44.34
-buy_analyse_interval 66 final shouyi: 43.57
-buy_analyse_interval 67 final shouyi: 41.80
-buy_analyse_interval 68 final shouyi: 39.30
-buy_analyse_interval 69 final shouyi: 46.10
-buy_analyse_interval 70 final shouyi: 53.39
-buy_analyse_interval 71 final shouyi: 58.81
-buy_analyse_interval 72 final shouyi: 79.80
-buy_analyse_interval 73 final shouyi: 78.14
-buy_analyse_interval 74 final shouyi: 75.97
-buy_analyse_interval 75 final shouyi: 74.99
-buy_analyse_interval 76 final shouyi: 74.08
-buy_analyse_interval 77 final shouyi: 73.00
-buy_analyse_interval 78 final shouyi: 73.00
-buy_analyse_interval 79 final shouyi: 72.94
-buy_analyse_interval 80 final shouyi: 68.31
-buy_analyse_interval 81 final shouyi: 74.78
-buy_analyse_interval 82 final shouyi: 82.58
-buy_analyse_interval 83 final shouyi: 81.79
-buy_analyse_interval 84 final shouyi: 79.00
-buy_analyse_interval 85 final shouyi: 72.10
-buy_analyse_interval 86 final shouyi: 70.05
-buy_analyse_interval 87 final shouyi: 66.34
-buy_analyse_interval 88 final shouyi: 65.50
-buy_analyse_interval 89 final shouyi: 62.85
-buy_analyse_interval 90 final shouyi: 61.57
-buy_analyse_interval 91 final shouyi: 60.84
-buy_analyse_interval 92 final shouyi: 60.84
-buy_analyse_interval 93 final shouyi: 60.84
-buy_analyse_interval 94 final shouyi: 59.34
-buy_analyse_interval 95 final shouyi: 57.83
-buy_analyse_interval 96 final shouyi: 55.04
-buy_analyse_interval 97 final shouyi: 55.04
-buy_analyse_interval 98 final shouyi: 50.09
-buy_analyse_interval 99 final shouyi: 49.75
-buy_analyse_interval 100 final shouyi: 49.75
-buy_analyse_interval 101 final shouyi: 45.60
-buy_analyse_interval 102 final shouyi: 44.55
-buy_analyse_interval 103 final shouyi: 42.43
-buy_analyse_interval 104 final shouyi: 42.04
-buy_analyse_interval 105 final shouyi: 50.42
-buy_analyse_interval 106 final shouyi: 50.28
-buy_analyse_interval 107 final shouyi: 48.53
-buy_analyse_interval 108 final shouyi: 48.29
-buy_analyse_interval 109 final shouyi: 54.59
-buy_analyse_interval 110 final shouyi: 48.83
-buy_analyse_interval 111 final shouyi: 47.04
-buy_analyse_interval 112 final shouyi: 46.97
-buy_analyse_interval 113 final shouyi: 46.97
-buy_analyse_interval 114 final shouyi: 43.82
-buy_analyse_interval 115 final shouyi: 43.82
-buy_analyse_interval 116 final shouyi: 42.39
-buy_analyse_interval 117 final shouyi: 40.82
-buy_analyse_interval 118 final shouyi: 40.69
-buy_analyse_interval 119 final shouyi: 39.30
+/Users/zman/PycharmProjects/tushare/venv/bin/python /Users/zman/PycharmProjects/tushare/venv/analyse_real_data/main.py
+buy_analyse_interval 5, stock increase: 4.83, final shouyi: 3.11
+buy_analyse_interval 6, stock increase: 4.83, final shouyi: 2.87
+buy_analyse_interval 7, stock increase: 4.83, final shouyi: 3.99
+buy_analyse_interval 8, stock increase: 4.83, final shouyi: 4.10
+buy_analyse_interval 9, stock increase: 4.83, final shouyi: 4.79
+buy_analyse_interval 10, stock increase: 4.83, final shouyi: 4.82
+buy_analyse_interval 11, stock increase: 4.83, final shouyi: 4.71
+buy_analyse_interval 12, stock increase: 4.83, final shouyi: 4.23
+buy_analyse_interval 13, stock increase: 4.83, final shouyi: 4.01
+buy_analyse_interval 14, stock increase: 4.83, final shouyi: 5.28
+buy_analyse_interval 15, stock increase: 4.83, final shouyi: 4.85
+buy_analyse_interval 16, stock increase: 4.83, final shouyi: 5.72
+buy_analyse_interval 17, stock increase: 4.83, final shouyi: 6.49
+buy_analyse_interval 18, stock increase: 4.83, final shouyi: 7.38
+buy_analyse_interval 19, stock increase: 4.83, final shouyi: 6.97
+buy_analyse_interval 20, stock increase: 4.83, final shouyi: 6.89
+buy_analyse_interval 21, stock increase: 4.83, final shouyi: 6.32
+buy_analyse_interval 22, stock increase: 4.83, final shouyi: 5.48
+buy_analyse_interval 23, stock increase: 4.83, final shouyi: 5.38
+buy_analyse_interval 24, stock increase: 4.83, final shouyi: 5.29
+buy_analyse_interval 25, stock increase: 4.83, final shouyi: 4.87
+buy_analyse_interval 26, stock increase: 4.83, final shouyi: 4.89
+buy_analyse_interval 27, stock increase: 4.83, final shouyi: 4.41
+buy_analyse_interval 28, stock increase: 4.83, final shouyi: 4.27
+buy_analyse_interval 29, stock increase: 4.83, final shouyi: 5.39
+buy_analyse_interval 30, stock increase: 4.83, final shouyi: 5.07
+buy_analyse_interval 31, stock increase: 4.83, final shouyi: 4.88
+buy_analyse_interval 32, stock increase: 4.83, final shouyi: 4.75
+buy_analyse_interval 33, stock increase: 4.83, final shouyi: 4.46
+buy_analyse_interval 34, stock increase: 4.83, final shouyi: 4.18
+buy_analyse_interval 35, stock increase: 4.83, final shouyi: 3.97
+buy_analyse_interval 36, stock increase: 4.83, final shouyi: 3.87
+buy_analyse_interval 37, stock increase: 4.83, final shouyi: 3.73
+buy_analyse_interval 38, stock increase: 4.83, final shouyi: 3.64
+buy_analyse_interval 39, stock increase: 4.83, final shouyi: 3.49
+buy_analyse_interval 40, stock increase: 4.83, final shouyi: 3.65
+buy_analyse_interval 41, stock increase: 4.83, final shouyi: 3.56
+buy_analyse_interval 42, stock increase: 4.83, final shouyi: 3.66
+buy_analyse_interval 43, stock increase: 4.83, final shouyi: 3.44
+buy_analyse_interval 44, stock increase: 4.83, final shouyi: 3.72
+buy_analyse_interval 45, stock increase: 4.83, final shouyi: 3.44
+buy_analyse_interval 46, stock increase: 4.83, final shouyi: 3.72
+buy_analyse_interval 47, stock increase: 4.83, final shouyi: 3.91
+buy_analyse_interval 48, stock increase: 4.83, final shouyi: 4.14
+buy_analyse_interval 49, stock increase: 4.83, final shouyi: 3.91
+buy_analyse_interval 50, stock increase: 4.83, final shouyi: 3.67
+buy_analyse_interval 51, stock increase: 4.83, final shouyi: 3.61
+buy_analyse_interval 52, stock increase: 4.83, final shouyi: 3.84
+buy_analyse_interval 53, stock increase: 4.83, final shouyi: 4.28
+buy_analyse_interval 54, stock increase: 4.83, final shouyi: 4.12
+buy_analyse_interval 55, stock increase: 4.83, final shouyi: 4.51
+buy_analyse_interval 56, stock increase: 4.83, final shouyi: 5.36
+buy_analyse_interval 57, stock increase: 4.83, final shouyi: 5.30
+buy_analyse_interval 58, stock increase: 4.83, final shouyi: 5.08
+buy_analyse_interval 59, stock increase: 4.83, final shouyi: 5.04
+buy_analyse_interval 60, stock increase: 4.83, final shouyi: 4.96
+buy_analyse_interval 61, stock increase: 4.83, final shouyi: 4.86
+buy_analyse_interval 62, stock increase: 4.83, final shouyi: 4.86
+buy_analyse_interval 63, stock increase: 4.83, final shouyi: 4.68
+buy_analyse_interval 64, stock increase: 4.83, final shouyi: 4.46
+buy_analyse_interval 65, stock increase: 4.83, final shouyi: 3.98
+buy_analyse_interval 66, stock increase: 4.83, final shouyi: 3.94
+buy_analyse_interval 67, stock increase: 4.83, final shouyi: 3.81
+buy_analyse_interval 68, stock increase: 4.83, final shouyi: 3.73
+buy_analyse_interval 69, stock increase: 4.83, final shouyi: 3.91
+buy_analyse_interval 70, stock increase: 4.83, final shouyi: 4.57
+buy_analyse_interval 71, stock increase: 4.83, final shouyi: 5.09
+buy_analyse_interval 72, stock increase: 4.83, final shouyi: 6.90
+buy_analyse_interval 73, stock increase: 4.83, final shouyi: 6.82
+buy_analyse_interval 74, stock increase: 4.83, final shouyi: 6.70
+buy_analyse_interval 75, stock increase: 4.83, final shouyi: 6.61
+buy_analyse_interval 76, stock increase: 4.83, final shouyi: 6.53
+buy_analyse_interval 77, stock increase: 4.83, final shouyi: 6.50
+buy_analyse_interval 78, stock increase: 4.83, final shouyi: 6.50
+buy_analyse_interval 79, stock increase: 4.83, final shouyi: 6.49
 
 Process finished with exit code 0

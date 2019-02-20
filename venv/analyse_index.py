@@ -107,7 +107,7 @@ def analyse(sh_index_code, sz_index_code, sh_index_df, sz_index_df):
 
 # 判断是否为关键点位：'buy' 'sell' 'hold'
 def check_point(index, index_df):
-    data = index_df[index: index + 40]
+    data = index_df[index: index + 18]
 
     max_line = data.loc[data['close'].idxmax()]
     min_line = data.loc[data['close'].idxmin()]
@@ -117,6 +117,15 @@ def check_point(index, index_df):
         if max_line['trade_date'] == data.iloc[0]['trade_date']:  # 最高点就是今天
             # print( "max date %s price %0.2f, min date %s price %0.2f" % (max_line['trade_date'], max_line['close'], min_line['trade_date'], min_line['close']))
             return 'buy'    # 买入
+
+    # 判断卖出 单日跌幅 > 3% from 上证日线，如果下跌趋势已成时，某日跌幅超过3%，接下来很可能继续跌
+    data = index_df[index: index + 10]
+    max_line = data.loc[data['close'].idxmax()]
+    min_line = data.loc[data['close'].idxmin()]
+    delta = (max_line['close'] - min_line['close']) / max_line['close']
+
+    if delta > 0.05 and data.iloc[0]['pct_chg'] <= -3:
+        return 'sell'
 
     # 判断卖出
     data = index_df[index : index+20]

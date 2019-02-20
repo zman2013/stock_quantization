@@ -127,7 +127,7 @@ def check_point(index, index_df, buy_analyse_interval):
 
 def simulate(code):
 
-    for buy_analyse_interval in range(18, 19):
+    for buy_analyse_interval in range(18, 80):
 
         file_path = "/tmp/"+code
 
@@ -152,23 +152,23 @@ def simulate(code):
 
         print("buy_analyse_interval %d, stock increase: %0.2f, final shouyi: %0.2f" % (buy_analyse_interval, end_price/start_price, index_df['zichan'][0] ))
 
-        plt.rcParams['axes.unicode_minus'] = False #用来正常显示负号
-        # 设置图片大小，宽高
-        plt.rcParams['figure.figsize'] = (100.0, 6.0)
-
-        fig1 = plt.figure(figsize=(100, 6))
-        ax1 = fig1.add_subplot(1, 1, 1)
-        ax1.xaxis.set_major_formatter(mdate.DateFormatter('%Y-%m-%d')) #设置时间标签显示格式
-
-        plt.xticks(pd.date_range('1896-05-26', '2016-01-07', freq='5Y'))
-
-        plot = index_df['close']
-        plot.plot(zorder=0, c='r', secondary_y=False, label='index', legend=True)
-        plot = index_df['zichan']
-        plot.plot(zorder=1, c='g', secondary_y=False, label='zichan', legend=True)
-
-        plt.grid(linestyle='-.')
-        plt.legend(loc='upper left')
-        plt.show()
+        # plt.rcParams['axes.unicode_minus'] = False #用来正常显示负号
+        # # 设置图片大小，宽高
+        # plt.rcParams['figure.figsize'] = (100.0, 6.0)
+        #
+        # fig1 = plt.figure(figsize=(100, 6))
+        # ax1 = fig1.add_subplot(1, 1, 1)
+        # ax1.xaxis.set_major_formatter(mdate.DateFormatter('%Y-%m-%d')) #设置时间标签显示格式
+        #
+        # plt.xticks(pd.date_range('1896-05-26', '2016-01-07', freq='5Y'))
+        #
+        # plot = index_df['close']
+        # plot.plot(zorder=0, c='r', secondary_y=False, label='index', legend=True)
+        # plot = index_df['zichan']
+        # plot.plot(zorder=1, c='g', secondary_y=False, label='zichan', legend=True)
+        #
+        # plt.grid(linestyle='-.')
+        # plt.legend(loc='upper left')
+        # plt.show()
 
 # simulate()

@@ -175,7 +175,7 @@ def ajust_date_to_quarter(x):
         return x[2:4] + '12'
 
 
-# 获取股价
+# 获取股价季度最高、最低
 def fetch_stock_price_df(stock_code, start_date):
     df = ts.pro_bar(pro_api=api, ts_code=stock_code, asset='E', adj='hfq', start_date=start_date)
 
@@ -187,6 +187,16 @@ def fetch_stock_price_df(stock_code, start_date):
     df_max_min = pd.merge(df_max, df_min, on='trade_date')
 
     return [df, df_max_min]
+
+
+# 获取股价日线
+def fetch_stock_daily_price_df(stock_code, start_date):
+    df = ts.pro_bar(pro_api=api, ts_code=stock_code, asset='E', adj='hfq', start_date=start_date)
+
+    df = df
+    df = df[['trade_date', 'close']]
+
+    return df
 
 
 # 分析股票

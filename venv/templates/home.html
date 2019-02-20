@@ -30,7 +30,9 @@
 
       <template>
           <div id="main" style="height:400px;"></div>
-          <div id="pe_chart" style="height:400px;"></div>
+          <el-input v-model="stockCode" placeholder="请输入股票代码，例如:000100.SZ" style="width:400px"></el-input>
+          <el-button @click="loadStockPrice()">加载</el-button>
+          <div id="stock_chart" style="height:400px;"></div>
       </template>
   </div>
 </body>
@@ -50,7 +52,8 @@
         data() {
           return {
                 dates: [],
-                tableData: []
+                tableData: [],
+                stockCode:''
                 };
         },
           created () {
@@ -60,16 +63,6 @@
           },
           methods: {
             fetchData () {
-                // axios.get("https://api.nytimes.com/svc/topstories/v2/home.json?api-key=your_api_key")
-                // .then(response => {this.tableData = response.data.results})
-
-                // axios.get("/stock_analysis")
-                // .then(response => {
-                //     this.dates = response.data.dates
-                //     this.tableData = response.data.data
-                // })
-
-
                 },
               cellStyle({row, column, rowIndex, columnIndex}){
                 if( columnIndex == 0){
@@ -78,8 +71,57 @@
                 }else{
                     return "padding:0"
                 }
-              }
-          }
+              },
+              loadStockPrice(){
+                // 基于准备好的dom，初始化echarts实例
+                var stockChart = echarts.init(document.getElementById('stock_chart'));
+
+                // 显示标题，图例和空的坐标轴
+                stockChart.setOption({
+                    title: {
+                        text: 'stock'
+                    },
+                    tooltip: {},
+                    legend: {
+                        data:['stock']
+                    },
+                    xAxis: {
+                        data: []
+                    },
+                    yAxis : [
+                        {
+                            type: 'value',
+                            name: 'stock',
+                            axisLabel: {
+                                formatter: '{value}'
+                            }
+                        },
+                    ],
+                    series: [{
+                        name: 'stock',
+                        type: 'line',
+                        data: []
+                    }]
+                });
+
+                // 异步加载数据
+                axios.get("/stock_chart/"+this.stockCode)
+                        .then(response => {
+                            // 填入数据
+                            stockChart.setOption({
+                                xAxis: [
+                                    {
+                                    data: response.data.stock.dates
+                                }
+                                    ],
+                                series:
+                                    response.data.stock.data
+
+                            });
+
+                        })
+                      }
+                  }
     })
 
 
@@ -154,54 +196,7 @@
 
         //#################
 
-        // // 基于准备好的dom，初始化echarts实例
-        // var peChart = echarts.init(document.getElementById('pe_chart'));
-        //
-        // // 显示标题，图例和空的坐标轴
-        // peChart.setOption({
-        //     title: {
-        //         text: 'pe'
-        //     },
-        //     tooltip: {},
-        //     legend: {
-        //         data:['pe']
-        //     },
-        //     xAxis: {
-        //         data: []
-        //     },
-        //     yAxis : [
-        //         {
-        //             type: 'value',
-        //             name: 'pe',
-        //             position: 'right',
-        //             axisLabel: {
-        //                 formatter: '{value}'
-        //             }
-        //         },
-        //     ],
-        //     series: [{
-        //         name: 'pe',
-        //         type: 'line',
-        //         data: []
-        //     }]
-        // });
-        //
-        // // 异步加载数据
-        // axios.get("/stock_pe_chart")
-        //         .then(response => {
-        //             // 填入数据
-        //             peChart.setOption({
-        //                 xAxis: [
-        //                     {
-        //                     data: response.data.pe.dates
-        //                 }
-        //                     ],
-        //                 series:
-        //                     response.data.pe.data
-        //
-        //             });
-        //
-        //         })
+
 
     </script>
 </html>
