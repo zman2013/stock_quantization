@@ -356,4 +356,214 @@ def simulate():
 
     print("shown")
 
-simulate()
+
+# 画出开户历史数据：周级数据
+def draw_stock_open_count():
+    df = api.stk_account(start_date='20150101')
+    print(df)
+    date_index = pd.to_datetime(df['date'], format='%Y%m%d')
+    df.set_index(date_index, inplace=True)
+    df = df.sort_index(ascending=True)
+
+
+
+# 获取指数数据：天级数据
+def fetch_index_sorted_history(start_date):
+    index_code = "000001.SH"
+    index_df = fetch_index_daily_df(index_code, start_date)
+    index_df['close'] = index_df['close']/index_df['close'].max()*100
+    date_index = pd.to_datetime(index_df['trade_date'], format='%Y%m%d')
+    index_df.set_index(date_index, inplace=True)
+    index_df = index_df.sort_index(ascending=True)
+    return index_df
+
+
+# 获取指数数据：周级数据
+def extract_index_weekly_history(index_df, stock_open_count_df):
+    df = pd.merge( stock_open_count_df, index_df, how='inner',
+                   left_index=True, right_index=True)
+    return df
+
+
+def draw_account_open():
+    # 获取旧数据
+    account_old_df = api.stk_account_old(start_date='20080101', end_date='20150529')
+    account_old_df['weekly_new'] = (account_old_df['new_sh'] + account_old_df['new_sz'])/10000
+    for index, line in account_old_df.iterrows():
+        # 20141229~0102
+        account_old_df.loc[index, 'date'] = line['date'][0:4] + line['date'][9:]
+
+    # 获取新数据
+    stock_open_count_df = api.stk_account(start_date='20150101')
+
+    # 拼接新旧数据
+    stock_open_count_df = stock_open_count_df.append(account_old_df, ignore_index=True)
+
+    stock_open_count_df['weekly_new'] = stock_open_count_df['weekly_new']/stock_open_count_df['weekly_new'].max()*100
+    date_index = pd.to_datetime(stock_open_count_df['date'], format='%Y%m%d')
+    stock_open_count_df.set_index(date_index, inplace=True)
+    stock_open_count_df = stock_open_count_df.sort_index(ascending=True)
+
+    for index, line in stock_open_count_df.iterrows():
+        print( line['date'], ' ', line['weekly_new'] )
+
+    index_df = fetch_index_sorted_history(start_date='20080101')
+    df = extract_index_weekly_history(index_df, stock_open_count_df)
+
+    plt.rcParams['axes.unicode_minus'] = False #用来正常显示负号
+    # 设置图片大小，宽高
+    plt.rcParams['figure.figsize'] = (30.0, 6.0)
+    # 画开户数
+    plot = df['weekly_new']
+    plot.plot(zorder=2, c='y', label='weekly_new', legend=True)
+    # 画指数
+    plot = df['close']
+    plot.plot(zorder=2, c='r', label='index', legend=True)
+
+    plt.legend(loc='upper left')
+    plt.show()
+
+
+# 北向、南向资金
+def cash_flow():
+    start_date = '20150101'
+    # 获取资金数据
+    df = None
+    today = datetime.datetime.today().date()
+    delta_year = 1
+
+    start_date = datetime.datetime.strptime(start_date, '%Y%m%d').date()
+    while today > start_date:
+        start_date_formatted = start_date.strftime('%Y%m%d')
+        end_date = datetime.date(start_date.year + delta_year, start_date.month, start_date.day)
+        end_date_formatted = end_date.strftime('%Y%m%d')
+
+        df2 = api.moneyflow_hsgt(start_date=start_date_formatted, end_date=end_date_formatted)
+        if df is not None:
+            df = df2.append(df, ignore_index=True)
+        else:
+            df = df2
+
+        start_date = end_date
+
+    cash_df = df
+    date_index = pd.to_datetime(cash_df['trade_date'], format='%Y%m%d')
+    cash_df.set_index(date_index, inplace=True)
+    cash_df = cash_df.sort_index(ascending=True)
+
+    # 按周统计数据
+    i = 0
+    south_money = 0
+    north_money = 0
+    for index, line in cash_df.iterrows():
+        south_money = south_money + line['south_money']
+        north_money = north_money + line['north_money']
+        if i < 4:
+            cash_df.loc[index,'south_money'] = 0
+            cash_df.loc[index, 'north_money'] = 0
+            i = i+1
+        else:
+            i = 0
+            cash_df.loc[index, 'south_money'] = south_money
+            cash_df.loc[index, 'north_money'] = north_money
+            south_money = 0
+            north_money = 0
+
+    # 标准化
+    cash_df['north_money'] = cash_df['north_money'] / cash_df['north_money'].max() * 100
+    cash_df['south_money'] = cash_df['south_money'] / cash_df['south_money'].max() * 100
+
+    # 指数数据
+    index_df = fetch_index_sorted_history(start_date='20150101')
+    index_df['close'] = index_df['close'] / index_df['close'].max() * 100
+
+    plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+    # 设置图片大小，宽高
+    plt.rcParams['figure.figsize'] = (30.0, 6.0)
+    # 画北向资金数
+    # plot = cash_df['north_money']
+    # plot.plot(zorder=2, c='y', label='north_money', legend=True)
+    # 画南向资金
+    plot = cash_df['south_money'] - cash_df['north_money']
+    plot.plot(zorder=2, c='r', label='south_money', legend=True)
+    # 画出指数
+    plot = index_df['close']
+    plot.plot(zorder=2, c='b', label='close', legend=True)
+
+    plt.legend(loc='upper left')
+    plt.show()
+
+
+# 融资融券数据
+def draw_margin():
+    index_df = fetch_index_sorted_history(start_date='20150101')
+    index_df['close'] = index_df['close'] / index_df['close'].max() * 100
+
+    # download margin data
+    # margin_df = None
+    # for index, line in index_df.iterrows():
+    #     trade_date = line['trade_date']
+    #     tmp_df = api.query('margin', trade_date=trade_date, exchange_id='SSE')
+    #     print( tmp_df )
+    #     if margin_df is None:
+    #         margin_df = tmp_df
+    #     else:
+    #         margin_df = margin_df.append( tmp_df, ignore_index=True)
+    #     # sleep 1秒
+    #     time.sleep(1)
+    # #
+    # file_path = "/tmp/margin_df.csv"
+    # margin_df.to_csv(file_path, index=False)
+
+    # 从文件读取融资数据
+    file_path = "/tmp/margin_df.csv"
+    margin_df = pd.read_csv(file_path)
+    date_index = pd.to_datetime(margin_df['trade_date'], format='%Y%m%d')
+    margin_df.set_index(date_index, inplace=True)
+    margin_df = margin_df.sort_index(ascending=True)
+
+    # 标准化
+    margin_df['rzye'] = margin_df['rzye'] / margin_df['rzye'].max() * 100
+    margin_df['rqye'] = margin_df['rqye'] / margin_df['rqye'].max() * 100
+    margin_df['rzmre'] = margin_df['rzmre'] / margin_df['rzmre'].max() * 100
+
+    plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+    # 设置图片大小，宽高
+    plt.rcParams['figure.figsize'] = (30.0, 6.0)
+    # 画融资余额
+    plot = margin_df['rzye']
+    plot.plot(zorder=2, c='y', label='rzye', legend=True)
+    # 画融资买入额
+    plot = margin_df['rzmre']
+    plot.plot(zorder=2, c='g', label='rzmre', legend=True)
+    # 画融券余额
+    plot = margin_df['rqye']
+    plot.plot(zorder=2, c='r', label='rqye', legend=True)
+    # 画出指数
+    plot = index_df['close']
+    plot.plot(zorder=2, c='b', label='index', legend=True)
+
+    plt.legend(loc='upper left')
+    plt.show()
+
+# 南向资金>北向资金，说明资金一直在流出A股，从15~17年可以看出，之前经历了暴跌，这种情形是慢牛
+# 南向资金-北向资金 连续>4周资金量较以往凸起，并且跟随两周资金量暴跌，说明资金流出的差不多了，A股活跃度接下来会凉，从18年可以看出，这种情形是慢熊
+# 牛熊转换比较明显，就看资金流向即可：
+#     1. 第一阶段：资金一直净流向A股，这时A股是一个下跌的过程，等资金积累到一定量，A股活跃度上来，必定上涨。
+#     2. 第二阶段：资金净流向A股降低，A股继续上涨
+#     3. 第三阶段：资金净流向反转，开始撤离A股，此时A股活跃度开始下降，如果之前进入了疯牛，将进入疯熊市
+#     4. 第四阶段：资金净持续流出，连续>4周资金量较以往凸起，并且跟随两周资金量暴跌，说明资金流出的差不多了，A股活跃度接下来会凉
+#     5. goto 第一阶段，如此循环
+# cash_flow()
+
+
+# draw_account_open()
+
+
+# 分为短期、长期
+# 短期对应疯牛，主要关注什么时机卖出
+# 1. 融资余额暴跌，牛转熊的信号，卖出
+# 长期对应普通情况
+# 1. 以半年期为时间单位，如果上升即为慢牛
+# 2. 以半年期为时间单位，如果下降即为慢熊
+draw_margin()
