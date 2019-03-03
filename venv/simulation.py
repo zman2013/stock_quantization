@@ -63,10 +63,12 @@ def download_index(index_code, start_date=None):
 
 # 分析股票，并进行交易
 def analyse(stock_code, sh_index_code, sz_index_code, stock_df, sh_index_df, sz_index_df):
-    stock_df['zichan'] = 0
+
     account = Account()
     account.stock[stock_code] = Stock()
     account.cash = stock_df.iloc[-1]['close']
+
+    stock_df['zichan'] = account.cash
 
     # 买入日期、价格
     buy_date = []
@@ -78,32 +80,25 @@ def analyse(stock_code, sh_index_code, sz_index_code, stock_df, sh_index_df, sz_
     # 从最早时间点向后遍历股票，遇到关键点位就进行操作
     for index in range(len(stock_df)-80, 0, -1):
         data = stock_df.iloc[index]
+
         sh_index_check_result = check_point( index, sh_index_df)
         sz_index_check_result = check_point( index, sz_index_df)
         stock_check_result = check_stock_point( index, stock_df)
-        if sh_index_check_result != 'hold':
-            account.stock[stock_code].sh_index_point = sh_index_check_result
-        else:
-            account.stock[stock_code].sh_index_point = 'hold'
-        if sz_index_check_result != 'hold':
-            account.stock[stock_code].sz_index_point = sz_index_check_result
-        else:
-            account.stock[stock_code].sz_index_point = 'hold'
-        if stock_check_result != 'hold':
-            account.stock[stock_code].stock_point = stock_check_result
-        else:
-            account.stock[stock_code].stock_point = stock_check_result
+
+        account.stock[stock_code].sh_index_point = sh_index_check_result
+        account.stock[stock_code].sz_index_point = sz_index_check_result
+        account.stock[stock_code].stock_point = stock_check_result
 
         stock = account.stock[stock_code]
 
-        if (stock.sh_index_point == 'buy' and stock.sz_index_point == 'buy') :
+        if (stock.sh_index_point == 'buy' and stock.sz_index_point == 'buy') and stock.stock_point != 'sell':
             vol = account.buy(stock_code, data['close'])
             if vol != 0:
                 buy_date.append(data['trade_date'])
                 buy_price.append(data['close'])
                 print("%s %s buy %0.2f on price %0.2f, zichan %0.2f" % (data['trade_date'], stock_code, vol, data['close'], account.cash + account.stock[stock_code].vol * data['close']))
         # elif (stock.sh_index_point == 'sell' and stock.sz_index_point == 'sell') or stock.stock_point == 'sell':
-        elif stock.stock_point == 'sell' or stock.sh_index_point == 'sell':
+        elif (stock.stock_point == 'sell' and stock.sh_index_point != 'buy'):
             vol = account.sell(stock_code, data['close'])
             if vol != 0:
                 sell_date.append(data['trade_date'])
@@ -122,7 +117,7 @@ def analyse(stock_code, sh_index_code, sz_index_code, stock_df, sh_index_df, sz_
 # 可以动态调整买入卖出的时间间隔吗
 # 判断是否为关键点位：'buy' 'sell' 'hold'
 def check_point(index, index_df):
-    data = index_df[index: index + 18]
+    data = index_df[index: index + 40]
 
     max_line = data.loc[data['close'].idxmax()]
     min_line = data.loc[data['close'].idxmin()]
@@ -299,14 +294,15 @@ def fetch_index_daily_df(index_code, start_date):
 
 def simulate():
     # 下载股票数据SH
-    # stock_code = '000651.SZ'    #格力
-    stock_code = '600066.SH'    #宇通
+    stock_code = '000651.SZ'    #格力
+    # stock_code = '600066.SH'    #宇通
     # stock_code = '601398.SH'    #工行
     # stock_code = '600104.SH'    #上汽
     # stock_code = '002624.SZ'
     # stock_code = '000905.SH'
     # stock_code = '000848.SZ'  #露露
     # stock_code = '300296.SZ'  #利亚德
+    # stock_code = '300003.SZ'  #乐普医疗
     # stock_code = '000001.SH'
     # stock_code = '399001.SZ'
     # stock_code = '000100.SZ'  #TCL
@@ -320,8 +316,8 @@ def simulate():
     # start_date = '20060101'
     start_date = '20110101'
     download_stock(stock_code, start_date)
-    download_index(sh_index_code, start_date)
-    download_index(sz_index_code, start_date)
+    # download_index(sh_index_code, start_date)
+    # download_index(sz_index_code, start_date)
 
     # is_point = check_point('000001.SH', 80)
     stock_df = read_data_frame(stock_code)
@@ -356,4 +352,4 @@ def simulate():
 
     print("shown")
 
-simulate()
+# simulate()

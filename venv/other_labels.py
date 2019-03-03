@@ -366,7 +366,6 @@ def draw_stock_open_count():
     df = df.sort_index(ascending=True)
 
 
-
 # 获取指数数据：天级数据
 def fetch_index_sorted_history(start_date):
     index_code = "000001.SH"
@@ -557,7 +556,7 @@ def draw_margin():
 # cash_flow()
 
 
-# draw_account_open()
+draw_account_open()
 
 
 # 分为短期、长期
@@ -566,4 +565,4 @@ def draw_margin():
 # 长期对应普通情况
 # 1. 以半年期为时间单位，如果上升即为慢牛
 # 2. 以半年期为时间单位，如果下降即为慢熊
-draw_margin()
+# draw_margin()

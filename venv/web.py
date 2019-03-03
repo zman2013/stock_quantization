@@ -15,6 +15,9 @@ from m2 import fetch_m2_df
 from select_stock import load_good_stock_by_quarter
 from simulation import repair_stock_data, fetch_stock_daily_price_df, fetch_index_daily_df
 
+from index_data import load_sh_index_pe, load_sz_index_pe, calculate_warning_point
+
+
 app = Flask(__name__)
 
 
@@ -35,6 +38,84 @@ def m2Page():
 @app.route('/select_by_quarter_inc_view')
 def select_by_quarter_inc_view():
     return render_template("select_by_quarter_inc.html")
+
+
+@app.route('/index_pe_view')
+def index_pe_view():
+    return render_template("index_pe_view.html")
+
+
+@app.route('/index_pe_chart')
+def index_pe_chart():
+    # 上证pe
+    sh_pe_df = load_sh_index_pe()
+
+    sh_pe_df.set_index(sh_pe_df['searchDate'], inplace=True)
+    pe_df = sh_pe_df
+    sh_pe_df = sh_pe_df[['profitRate']]
+    sh_pe_df = sh_pe_df.transpose()
+    sh_pe_df = sh_pe_df.sort_index(axis=1, ascending=False)
+
+    jsonData = {'sh_pe': {}}
+    jsonData['sh_pe']['dates'] = sh_pe_df.columns.values.tolist()
+    jsonData['sh_pe']['data'] = []
+
+    data = json.loads(sh_pe_df.to_json(orient="values"))
+    for d in data:
+        tmp = {}
+        tmp['name'] = '上证pe'
+        tmp['data'] = d
+        tmp['type'] = 'line'
+        jsonData['sh_pe']['data'].append(tmp)
+
+    # 深成pe
+    sz_pe_df = load_sz_index_pe()
+
+    sz_pe_df.set_index(sz_pe_df['searchDate'], inplace=True)
+    sz_pe_df = sz_pe_df[['profitRate']]
+    sz_pe_df = sz_pe_df.transpose()
+    sz_pe_df = sz_pe_df.sort_index(axis=1, ascending=False)
+
+    jsonData['sz_pe'] = {}
+    jsonData['sz_pe']['data'] = []
+
+    data = json.loads(sz_pe_df.to_json(orient="values"))
+    for d in data:
+        tmp = {}
+        tmp['name'] = '深成pe'
+        tmp['data'] = d
+        tmp['type'] = 'line'
+        tmp['yAxisIndex'] = 1
+        jsonData['sz_pe']['data'].append(tmp)
+
+    # 获取警告点
+    [buy_date, buy_index, sell_date, sell_index] = calculate_warning_point(pe_df)
+
+    tmp = {}
+    tmp['name'] = '买入'
+    tmp['data'] = []
+    for i in range(0, len(buy_date)):
+        tmp['data'].append([str(buy_date[i]), buy_index[i]])
+    tmp['type'] = 'scatter'
+    tmp['itemStyle'] = {'normal': {'color': '#f00'}}
+    tmp['symbolSize'] = 10
+    jsonData['buy_point'] = {}
+    jsonData['buy_point']['data'] = []
+    jsonData['buy_point']['data'].append(tmp)
+    # 画点（买入、卖出）
+    tmp = {}
+    tmp['name'] = '卖出'
+    tmp['data'] = []
+    for i in range(0, len(sell_date)):
+        tmp['data'].append([str(sell_date[i]), sell_index[i]])
+    tmp['type'] = 'scatter'
+    tmp['itemStyle'] = {'normal': {'color': '#080'}}
+    tmp['symbolSize'] = 10
+    jsonData['sell_point'] = {}
+    jsonData['sell_point']['data'] = []
+    jsonData['sell_point']['data'].append(tmp)
+
+    return jsonify(jsonData)
 
 
 @app.route('/select_by_quarter_inc')
