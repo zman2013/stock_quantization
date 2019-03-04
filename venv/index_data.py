@@ -169,6 +169,16 @@ def download_sh_pe_data(start_date):
         else:
             pe_df = pe_df.append(df)
 
+    # 加载已有数据
+    df = load_sh_index_pe()
+    # 新旧数据拼接
+    pe_df = df.append(pe_df)
+    # 去重
+    pe_df = pe_df.drop_duplicates(subset='searchDate')
+    # 排序
+    date_index = pd.to_datetime(pe_df['searchDate'], format='%Y-%m-%d')
+    pe_df.set_index(date_index, inplace=True)
+    pe_df = pe_df.sort_index(ascending=False)
     # 写入文件
     file_path = dir_path + 'sh_pe.csv'
     pe_df.to_csv(file_path)
@@ -232,6 +242,16 @@ def download_sz_pe_data(start_date):
         else:
             pe_df = pe_df.append(df)
 
+    # 加载已有数据
+    df = load_sz_index_pe()
+    # 新旧数据拼接
+    pe_df = df.append(pe_df)
+    # 去重
+    pe_df = pe_df.drop_duplicates(subset='searchDate')
+    # 排序
+    date_index = pd.to_datetime(pe_df['searchDate'], format='%Y-%m-%d')
+    pe_df.set_index(date_index, inplace=True)
+    pe_df = pe_df.sort_index(ascending=False)
     # 写入文件
     file_path = dir_path + 'sz_pe.csv'
     pe_df.to_csv(file_path)
@@ -329,11 +349,17 @@ def draw_sh_pe():
     plt.legend(loc='upper left')
     plt.show()
 
-# download_sh_pe_data('20160101')
+
 # draw()
-# download_index(index_code='000001.SH', start_date='20190301')
+
 # dates = load_available_dates()
 # draw_sh_pe()
-# download_sz_pe_data('20160101')
 
-calculate_warning_point(load_sh_index_pe())
+
+# ////////  使用步骤，先下载指数，主要用来获取有效日期。依次执行以下三步     /////////
+# 下载指数
+# download_index(index_code='000001.SH', start_date='20160101')
+# 下载上证pe
+download_sh_pe_data('20190301')
+# 下载深成pe
+download_sz_pe_data('20190301')
