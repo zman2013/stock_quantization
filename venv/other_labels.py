@@ -3,6 +3,7 @@
 
 import time
 import datetime
+import os
 
 import tushare as ts
 import pandas as pd
@@ -14,6 +15,7 @@ from stock import Stock
 
 api = ts.pro_api('0a2415da6321725dec885fc0a46975dd3009c45ee1870e072c8d1865')
 
+dir_path = '/Users/zman/PycharmProjects/tushare/venv/data/index/'
 
 # 下载股票数据
 def download(code, start_date=None, asset='E', adj=None):
@@ -396,7 +398,7 @@ def draw_account_open():
     stock_open_count_df = api.stk_account(start_date='20150101')
 
     # 拼接新旧数据
-    stock_open_count_df = stock_open_count_df.append(account_old_df, ignore_index=True)
+    # stock_open_count_df = stock_open_count_df.append(account_old_df, ignore_index=True)
 
     stock_open_count_df['weekly_new'] = stock_open_count_df['weekly_new']/stock_open_count_df['weekly_new'].max()*100
     date_index = pd.to_datetime(stock_open_count_df['date'], format='%Y%m%d')
@@ -498,24 +500,41 @@ def draw_margin():
     index_df = fetch_index_sorted_history(start_date='20150101')
     index_df['close'] = index_df['close'] / index_df['close'].max() * 100
 
+
+
     # download margin data
-    # margin_df = None
-    # for index, line in index_df.iterrows():
-    #     trade_date = line['trade_date']
-    #     tmp_df = api.query('margin', trade_date=trade_date, exchange_id='SSE')
-    #     print( tmp_df )
-    #     if margin_df is None:
-    #         margin_df = tmp_df
-    #     else:
-    #         margin_df = margin_df.append( tmp_df, ignore_index=True)
-    #     # sleep 1秒
-    #     time.sleep(1)
-    # #
-    # file_path = "/tmp/margin_df.csv"
-    # margin_df.to_csv(file_path, index=False)
+    margin_df = None
+    for index, line in index_df.iterrows():
+        trade_date = line['trade_date']
+        tmp_df = api.query('margin', trade_date=trade_date, exchange_id='SSE')
+        print( tmp_df )
+        if margin_df is None:
+            margin_df = tmp_df
+        else:
+            margin_df = margin_df.append( tmp_df, ignore_index=True)
+        # sleep 1秒
+        time.sleep(1)
+    #
+
+    file_path = dir_path + "/margin_df.csv"
+
+    # 如果文件已经存在就加载旧数据，并和新数据合并去重后，再写入文件
+    if os.path.exists(file_path):
+        # 加载已有数据
+        df = pd.read_csv(file_path)
+        # 新旧数据拼接
+        margin_df = df.append(margin_df)
+        # 去重
+        margin_df = margin_df.drop_duplicates(subset='trade_date')
+        # 排序
+        date_index = pd.to_datetime(margin_df['trade_date'], format='%Y-%m-%d')
+        margin_df.set_index(date_index, inplace=True)
+        margin_df = margin_df.sort_index(ascending=False)
+
+    # 写入文件
+    margin_df.to_csv(file_path, index=False)
 
     # 从文件读取融资数据
-    file_path = "/tmp/margin_df.csv"
     margin_df = pd.read_csv(file_path)
     date_index = pd.to_datetime(margin_df['trade_date'], format='%Y%m%d')
     margin_df.set_index(date_index, inplace=True)
@@ -556,7 +575,7 @@ def draw_margin():
 # cash_flow()
 
 
-draw_account_open()
+# draw_account_open()
 
 
 # 分为短期、长期

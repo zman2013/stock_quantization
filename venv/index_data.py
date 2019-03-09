@@ -360,6 +360,6 @@ def draw_sh_pe():
 # 下载指数
 # download_index(index_code='000001.SH', start_date='20160101')
 # 下载上证pe
-download_sh_pe_data('20190301')
+# download_sh_pe_data('20190301')
 # 下载深成pe
-download_sz_pe_data('20190301')
+# download_sz_pe_data('20190301')
