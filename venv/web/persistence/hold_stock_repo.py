@@ -17,7 +17,7 @@ file_path = setting.root_dir + '/hold_stock/list.csv'
 
 
 # 加载持有的股票列表
-def find():
+def load():
     df = None
     try:
         df = pd.read_csv(file_path)
@@ -28,4 +28,4 @@ def find():
 
 # 输出持有的股票
 def save(df):
-    df.to_csv(file_path)
+    df.to_csv(file_path, index_label=False)

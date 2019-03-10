@@ -1,4 +1,5 @@
 import time
+import sys
 
 from flask import Flask
 from flask import render_template
@@ -8,23 +9,33 @@ import pandas as pd
 
 import json
 
-from finance_analysis import finance_analyse, analyse_chart, fetch_finance_data, \
-    fetch_pe_df, fetch_stock_price_df
-from analyse_index import analyse_index, fetch_index_df
-from m2 import fetch_m2_df
-from select_stock import load_good_stock_by_quarter
-from simulation import repair_stock_data, fetch_stock_daily_price_df, fetch_index_daily_df
-
-from index_data import load_sh_index_pe, load_sz_index_pe, calculate_warning_point
-
-from service import hold_stock_service
-
 from web import app
 from flask import Blueprint
+
+from web.service import hold_stock_service
+
 
 hold_stock_blueprint = Blueprint('hold_stock', __name__, url_prefix='/hold_stock')
 
 
-@hold_stock_blueprint.route('/')
-def home():
-    return render_template("home.html")
+@hold_stock_blueprint.route('/view')
+def view():
+    return render_template("hold_stock/view.html")
+
+
+@hold_stock_blueprint.route('/info')
+def info():
+    hold_stock_info_json = hold_stock_service.fetch_hold_stock_info()
+    json_data = {
+        'data': hold_stock_info_json
+    }
+    return jsonify(json_data)
+
+
+@hold_stock_blueprint.route('/download')
+def download():
+    result = hold_stock_service.download_hold_stock_info()
+    json_data = {
+        'data': result
+    }
+    return jsonify(json_data)

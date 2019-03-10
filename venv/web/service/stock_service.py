@@ -9,34 +9,34 @@ from pandas.tseries.offsets import *
 import json
 import sys
 
-sys.path.append("..")
-from persistence import stock_repo
+from web.persistence import stock_repo
 
-sys.path.append("..")
 from setting import ts_api
 
 
 # 获取pe
 def find_pe_df(stock_code, start_date):
-    df = stock_repo.find_pe(stock_code, start_date)
+    df = stock_repo.load_pe(stock_code, start_date)
     return df
 
 
 # 获取股价日线
 def find_stock_daily_price_df(stock_code, start_date):
-    df = stock_repo.find_daily(stock_code, start_date)
+    df = stock_repo.load_daily(stock_code, start_date)
     return df
 
 
 # 下载股票pe并保存到本地
-def download_pe_df(stock_code, start_date):
+def download_pe_df(stock_code, start_date=None):
     df = ts_api.daily_basic(ts_code=stock_code, start_date=start_date)
+    # df['trade_date'] = df['trade_date'].apply(lambda x: pd.to_datetime(x, format='%Y%m%d'))
     stock_repo.save_pe(stock_code, df)
 
 
 # 下载股票日线图并保存到本地
 def download_daily_df(stock_code, start_date=None):
     df = download(stock_code, start_date, asset='E', adj='hfq')
+    # df['trade_date'] = df['trade_date'].apply(lambda x: pd.to_datetime(x, format='%Y%m%d'))
     stock_repo.save_daily(stock_code, df)
 
 
