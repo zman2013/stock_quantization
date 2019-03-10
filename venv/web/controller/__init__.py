@@ -10,5 +10,9 @@ import setting
 
 from web.controller.home import *
 from web.controller.hold_stock import hold_stock_blueprint
+from web.controller.index_pe import index_pe_blueprint
+from web.controller.index import index_blueprint
 
 app.register_blueprint(hold_stock_blueprint)
+app.register_blueprint(index_pe_blueprint)
+app.register_blueprint(index_blueprint)

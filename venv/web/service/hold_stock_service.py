@@ -7,10 +7,12 @@ from web.persistence import hold_stock_repo
 from web.service import stock_service
 
 
+# 获取持有的股票信息df
 def get_hold_stock():
     return hold_stock_repo.load()
 
 
+# 保存持有的股票df
 def save_hold_stock(df):
     hold_stock_repo.save(df)
 
