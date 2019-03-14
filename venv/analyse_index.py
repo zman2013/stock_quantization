@@ -111,7 +111,7 @@ def check_point(index, index_df):
             # print( "max date %s price %0.2f, min date %s price %0.2f" % (max_line['trade_date'], max_line['close'], min_line['trade_date'], min_line['close']))
             return 'buy'    # 买入
 
-    # 判断卖出 单日跌幅 > 3% from 上证日线，如果下跌趋势已成时，某日跌幅超过3%，接下来很可能继续跌
+    # 判断卖出 单日跌幅 > 3% from 上证日线，如果下跌趋势已成时（从最高最多下跌>5%），某日跌幅超过3%，接下来很可能继续跌
     data = index_df[index: index + 10]
     max_line = data.loc[data['close'].idxmax()]
     min_line = data.loc[data['close'].idxmin()]
