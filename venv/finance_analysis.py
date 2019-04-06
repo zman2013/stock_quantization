@@ -179,6 +179,8 @@ def ajust_date_to_quarter(x):
 def fetch_stock_price_df(stock_code, start_date):
     df = ts.pro_bar(pro_api=api, ts_code=stock_code, asset='E', adj='hfq', start_date=start_date)
 
+    df.reset_index(drop=True, inplace=True)
+
     df['trade_date'] = df['trade_date'].apply(lambda x: ajust_date_to_quarter(x))
 
     df = df[['trade_date', 'close']]

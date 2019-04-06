@@ -5,3 +5,4 @@ venv/__pycache__
 venv/__pycache__
 venv/__pycache__/*
 venv/web/service/__pycache__/
+*.pyc

@@ -12,6 +12,8 @@ from pandas.tseries.offsets import *
 import json
 from finance_analysis import add_quarter_data, compute_yoy
 
+from setting import root_dir
+
 api = ts.pro_api('0a2415da6321725dec885fc0a46975dd3009c45ee1870e072c8d1865')
 
 
@@ -30,7 +32,7 @@ def select_by_quarter():
     for index, line in df.iterrows():
         ts_code = line['ts_code']
 
-        file_dir = "/Users/zman/stock/tushare/finance_data/"+ts_code
+        file_dir = root_dir+"/finance_data/"+ts_code
         if not os.path.exists(file_dir):
             os.makedirs(file_dir)
 
@@ -85,7 +87,7 @@ def select_by_quarter():
 
     df = pd.DataFrame(good_stocks)
 
-    df.to_csv(file_dir+"/good_stocks", index=False)
+    df.to_csv(root_dir+"/finance_data/good_stocks", index=False)
 
     return good_stocks
 
@@ -116,7 +118,7 @@ def analyse_cashflow(stock_code, start_date):
 
 # 加载分析完成的股票
 def load_good_stock_by_quarter():
-    file_path = "/Users/zman/stock/tushare/finance_data/603999.SHgood_stocks"
+    file_path = root_dir+"/finance_data/good_stocks"
     df = pd.read_csv(file_path)
     latest_quarter_label = df.columns[2]  # 最近一个季度
     df['latest_quarter_float'] = df[latest_quarter_label].apply(lambda value: float(value[:-2]))

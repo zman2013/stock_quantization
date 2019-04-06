@@ -111,7 +111,7 @@ def download():
         start_date = today + day_delta
         start_date = start_date.strftime('%Y%m%d')
 
-    # index_pe_service.download_sh_pe(start_date=start_date)
+    index_pe_service.download_sh_pe(start_date=start_date)
     index_pe_service.download_sz_pe(start_date=start_date)
     json_data = {
         'data': 'success'

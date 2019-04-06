@@ -497,7 +497,7 @@ def cash_flow():
 
 # 融资融券数据
 def draw_margin():
-    index_df = fetch_index_sorted_history(start_date='20150101')
+    index_df = fetch_index_sorted_history(start_date='20190101')
     index_df['close'] = index_df['close'] / index_df['close'].max() * 100
 
 
@@ -581,7 +581,7 @@ def draw_margin():
 # 分为短期、长期
 # 短期对应疯牛，主要关注什么时机卖出
 # 1. 融资余额暴跌，牛转熊的信号，卖出
-# 长期对应普通情况
+# 长期对应普通情况 m
 # 1. 以半年期为时间单位，如果上升即为慢牛
 # 2. 以半年期为时间单位，如果下降即为慢熊
-# draw_margin()
+draw_margin()
