@@ -500,8 +500,6 @@ def draw_margin():
     index_df = fetch_index_sorted_history(start_date='20190101')
     index_df['close'] = index_df['close'] / index_df['close'].max() * 100
 
-
-
     # download margin data
     margin_df = None
     for index, line in index_df.iterrows():
@@ -572,7 +570,7 @@ def draw_margin():
 #     3. 第三阶段：资金净流向反转，开始撤离A股，此时A股活跃度开始下降，如果之前进入了疯牛，将进入疯熊市
 #     4. 第四阶段：资金净持续流出，连续>4周资金量较以往凸起，并且跟随两周资金量暴跌，说明资金流出的差不多了，A股活跃度接下来会凉
 #     5. goto 第一阶段，如此循环
-# cash_flow()
+cash_flow()
 
 
 # draw_account_open()
@@ -584,4 +582,4 @@ def draw_margin():
 # 长期对应普通情况 m
 # 1. 以半年期为时间单位，如果上升即为慢牛
 # 2. 以半年期为时间单位，如果下降即为慢熊
-draw_margin()
+# draw_margin()

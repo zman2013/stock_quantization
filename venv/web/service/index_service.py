@@ -1,13 +1,6 @@
-import time
 import datetime
 
 import tushare as ts
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from pandas.tseries.offsets import *
-import json
-import sys
 
 from web.persistence import index_repo
 

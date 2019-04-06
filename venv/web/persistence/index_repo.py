@@ -30,8 +30,8 @@ def load_daily(index_code, start_date):
     if start_date is not None:
         start_date = datetime.datetime.strptime(start_date, '%Y%m%d').date()
         for index in df.index:
-            if index.date() > start_date:
-                df.drop(index=index)
+            if index.date() < start_date:
+                df = df.drop(index=index)
 
     if df is not None:
         df['trade_date'] = df['trade_date'].apply(str)
@@ -74,8 +74,8 @@ def load_pe(index_code, start_date=None):
     if start_date is not None:
         start_date = datetime.datetime.strptime(start_date, '%Y%m%d').date()
         for index in df.index:
-            if index.date() > start_date:
-                df.drop(index=index)
+            if index.date() < start_date:
+                df = df.drop(index=index)
 
     if df is not None:
         df['trade_date'] = df['searchDate'].apply(str)

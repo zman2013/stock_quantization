@@ -6,10 +6,6 @@ import os
 
 import tushare as ts
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from pandas.tseries.offsets import *
-import json
 from finance_analysis import add_quarter_data, compute_yoy
 
 from setting import root_dir

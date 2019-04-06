@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+
+<body>
+  <div id="app">
+
+      <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
+          <el-menu-item index="1" style="height:20px;line-height: 20px"><a href="/" target="_self">指数走势</a></el-menu-item>
+          <el-menu-item index="2" style="height:20px;line-height: 20px"><a href="/m2" target="_self">货币供应</a></el-menu-item>
+          <el-menu-item index="3" style="height:20px;line-height: 20px"><a href="/stock_finance/600000.SH" target="_self">个股</a></el-menu-item>
+          <el-menu-item index="3" style="height:20px;line-height: 20px"><a href="/select_by_quarter_inc_view" target="_self">季度</a></el-menu-item>
+          <el-menu-item index="3" style="height:20px;line-height: 20px"><a href="/index_pe_view" target="_self">PE</a></el-menu-item>
+        </el-menu>
+
+      <template>
+          <div id="money_chart" style="height:400px;"></div>
+          <div style="font-weight: bold">南向资金>北向资金，说明资金一直在流出A股，从15~17年可以看出，之前经历了暴跌，这种情形是慢牛</div>
+          <div>南向资金-北向资金 连续>4周资金量较以往凸起，并且跟随两周资金量暴跌，说明资金流出的差不多了，A股活跃度接下来会凉，从18年可以看出，这种情形是慢熊</div>
+          <div>牛熊转换比较明显，就看资金流向即可：</div>
+          <div>1. 第一阶段：资金一直净流向A股，这时A股是一个下跌的过程，等资金积累到一定量，A股活跃度上来，必定上涨。</div>
+          <div>2. 第二阶段：资金净流向A股降低，A股继续上涨</div>
+          <div>3. 第三阶段：资金净流向反转，开始撤离A股，此时A股活跃度开始下降，如果之前进入了疯牛，将进入疯熊市</div>
+          <div>4. 第四阶段：资金净持续流出，连续>4周资金量较以往凸起，并且跟随两周资金量暴跌，说明资金流出的差不多了，A股活跃度接下来会凉</div>
+          <div>5. goto 第一阶段，如此循环</div>
+
+      </template>
+  </div>
+</body>
+  <!-- import Vue before Element -->
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- echart -->
+    <script src="https://cdn.bootcss.com/echarts/4.2.0-rc.2/echarts.min.js"></script>
+
+  <script>
+    new Vue({
+
+      el: '#app',
+        data() {
+          return {};
+        },
+          created () {
+          },
+          methods: {
+              fetchData() {
+              }
+          }
+
+    })
+    </script>
+
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('money_chart'));
+
+        // 显示标题，图例和空的坐标轴
+        myChart.setOption({
+            title: {
+                text: '资金净流向（北-南）'
+            },
+            tooltip: {},
+            legend: {
+                data:['上证指数','资金净流向']
+            },
+            xAxis: {
+                data: []
+            },
+            yAxis : [
+                {
+                         type: 'value',
+                         name: '上证指数',
+                         position: 'right',
+                        axisLabel: {
+                            formatter: '{value} '
+                        }
+                },
+                {
+                    type: 'value',
+                    name: '资金净流向',
+                    position: 'left',
+                    axisLabel: {
+                        formatter: '{value} '
+                    }
+                },
+            ],
+            series: [{
+                name: '',
+                type: 'line',
+                data: []
+            }]
+        });
+
+        // 异步加载数据
+        axios.get("/money_flow_north_south/chart_json")
+                .then(response => {
+                    // 填入数据
+                    myChart.setOption({
+                        xAxis: [
+                            {
+                            data: response.data.index.dates
+                        }
+                            ],
+                        series:
+                            response.data.index.data
+                            .concat(
+                                response.data.money_flow_pure.data
+                            )
+                    });
+                })
+
+    </script>
+</html>
