@@ -252,7 +252,7 @@ def analyse_chart(finance_df, pe_df, stock_price_max_min_df, price_df ):
 
     # 股价日线
     price_df = price_df.transpose()
-    price_df = price_df.sort_index(axis=1, ascending=False)
+    # price_df = price_df.sort_index(axis=1, ascending=False)
     price_df = price_df['close':]
     data = json.loads(price_df.to_json(orient="values"))
     d = data[0]

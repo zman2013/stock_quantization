@@ -87,7 +87,8 @@ def save_pe(index_code, df):
     # 加载已有数据
     pe_df = load_pe(index_code=index_code)
     # 新旧数据拼接
-    pe_df = df.append(pe_df, ignore_index=True)
+    if pe_df is not None and df is not None:
+        pe_df = df.append(pe_df, ignore_index=True)
     # 去重
     pe_df = pe_df.drop_duplicates(subset='searchDate')
     # 排序

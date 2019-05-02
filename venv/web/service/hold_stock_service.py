@@ -101,17 +101,17 @@ def fetch_stock_info(stock_code, buy_date):
     pe_label = compute_pe_label(stock_pe_df)
 
     # 股价120天涨跌幅
-    # 从最低点涨多少
-    raise_percent = compute_raise_percent(stock_daily_df)
+    # 从最低点涨多少，最低点日期
+    [raise_percent, min_trade_date] = compute_raise_percent(stock_daily_df)
 
-    # 从最高点跌多少
-    fall_percent = compute_fall_percent(stock_daily_df)
+    # 从最高点跌多少，最高点日期
+    [fall_percent, max_trade_date] = compute_fall_percent(stock_daily_df)
 
     # 日线指标
     daily_label = 'hold'
-    if fall_percent < -20:
+    if fall_percent < -20 and max_trade_date > min_trade_date:
         daily_label = 'sell'
-    if raise_percent > 20:
+    if raise_percent > 20 and max_trade_date < min_trade_date:
         daily_label = 'buy'
 
     # 买入后收益
@@ -143,28 +143,34 @@ def compute_pe_label(stock_pe_df):
         return 'hold'
 
 
-# 股价120天涨跌幅, 从最低点涨多少
+# 股价120天涨跌幅, 从最低点涨多少，返回日期
 def compute_raise_percent(stock_daily_df):
     data = stock_daily_df[0: 120]
 
     min_line = data.loc[data['close'].idxmin()]
 
+    trade_date = min_line['trade_date']
+    trade_date = datetime.datetime.strptime(str(trade_date), '%Y%m%d').date()
+
     today_daily = data.iloc[0]['close']
 
     percent = (today_daily - min_line['close']) / min_line['close'] * 100
-    return round(percent, 2)
+    return [round(percent, 2), trade_date]
 
 
-# 股价120天涨跌幅, 从最高点降多少
+# 股价120天涨跌幅, 从最高点降多少, 返回日期
 def compute_fall_percent(stock_daily_df):
     data = stock_daily_df[0: 120]
 
     max_line = data.loc[data['close'].idxmax()]
 
+    trade_date = max_line['trade_date']
+    trade_date = datetime.datetime.strptime(str(trade_date), '%Y%m%d').date()
+
     today_daily = data.iloc[0]['close']
 
     percent = (today_daily - max_line['close']) / max_line['close'] * 100
-    return round(percent, 2)
+    return [round(percent, 2), trade_date]
 
 
 # stock_code = '600690.SH'

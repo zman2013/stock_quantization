@@ -2,11 +2,15 @@
 # 根据财务筛选股票
 
 import time
+import datetime
 import os
+import traceback
 
 import tushare as ts
 import pandas as pd
 from finance_analysis import add_quarter_data, compute_yoy
+
+from pandas.tseries.offsets import *
 
 from setting import root_dir
 
@@ -33,15 +37,38 @@ def select_by_quarter():
             os.makedirs(file_dir)
 
         try:
-            time.sleep(1)
-            income_df = analyse_income_df(ts_code, start_date)
-            cashflow_df = analyse_cashflow(ts_code, start_date)
 
-            income_df.to_csv(file_dir+"/income_df", index=False)
-            cashflow_df.to_csv(file_dir + "/cashflow_df", index=False)
+            if os.path.exists(file_dir+"/income_df"):
+                income_df = pd.read_csv(file_dir+"/income_df")
+                today = datetime.datetime.today().date()
+                last_quarter = (today - QuarterEnd(n=1))
+                end_date = last_quarter.strftime("%Y%m%d")
+
+                income_end_date = income_df.iloc[0]["end_date"]
+                if str(income_end_date) == end_date:
+                    cashflow_df = pd.read_csv(file_dir+"/cashflow_df")
+                else:
+                    print("downloading " + ts_code)
+                    time.sleep(1)
+                    income_df = analyse_income_df(ts_code, start_date)
+                    cashflow_df = analyse_cashflow(ts_code, start_date)
+
+                    income_df.to_csv(file_dir + "/income_df", index=False)
+                    cashflow_df.to_csv(file_dir + "/cashflow_df", index=False)
+            else:
+                print("downloading " + ts_code)
+                time.sleep(1)
+                income_df = analyse_income_df(ts_code, start_date)
+                cashflow_df = analyse_cashflow(ts_code, start_date)
+
+                income_df.to_csv(file_dir+"/income_df", index=False)
+                cashflow_df.to_csv(file_dir + "/cashflow_df", index=False)
 
             # 判断前四条数据（即最近四个季度）：季度营收同比、季度利润增速都>10
             for income_df_index, income_df_line in income_df.iterrows():
+                # 净利润小于1亿，忽略
+                if income_df_line['n_income'] < 100000000:
+                    break
                 if income_df_line['yoy_quarter_total_revenue'] < 10 \
                         or income_df_line['yoy_quarter_total_profit'] < 10 \
                         or income_df_line['yoy_quarter_n_income'] < 10 \
@@ -61,10 +88,13 @@ def select_by_quarter():
                     second_index = income_df.index[1]
                     third_index = income_df.index[2]
                     date = income_df.loc[first_index, 'end_date']
+                    date = str(date)
                     stock_info[date] = "%0.1f%%" % income_df.loc[first_index, 'yoy_quarter_total_revenue']
                     date = income_df.loc[second_index, 'end_date']
+                    date = str(date)
                     stock_info[date] = "%0.1f%%" % income_df.loc[second_index, 'yoy_quarter_total_revenue']
                     date = income_df.loc[third_index, 'end_date']
+                    date = str(date)
                     stock_info[date] = "%0.1f%%" % income_df.loc[third_index, 'yoy_quarter_total_revenue']
 
                     # 获取pe
@@ -79,7 +109,7 @@ def select_by_quarter():
                     break
         except Exception as e:
             print("analyse stock[%s] failed" % ts_code)
-            print("Unexpected error:", e)
+            traceback.print_exc()
 
     df = pd.DataFrame(good_stocks)
 

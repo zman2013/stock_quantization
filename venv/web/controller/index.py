@@ -103,7 +103,7 @@ def download():
     start_date = request.args.get('start_date')
     # 如果没有参数，获取最近一个月的数据
     if start_date is None:
-        day_delta = datetime.timedelta(days=-7)
+        day_delta = datetime.timedelta(days=-30)
 
         today = datetime.datetime.today().date()
 

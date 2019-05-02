@@ -122,7 +122,7 @@ def select_by_quarter_inc():
 
     jsonData = {}
     jsonData['data'] = json.loads(df.to_json(orient="records"))
-    jsonData['dates'] = df.columns.values.tolist()[0:4]
+    jsonData['dates'] = df.columns.values.tolist()[0:5]
     jsonData['dates'].reverse()
 
     return jsonify(jsonData)

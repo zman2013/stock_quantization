@@ -43,16 +43,19 @@ def load(start_date):
 
 # 保存资金流向数据
 def save(df):
+    if df is None:
+        return
+
     old_df = load(start_date=None)
     if old_df is not None:
         df = df.append(old_df)
 
-        # 排序
-        date_index = pd.to_datetime(df['trade_date'], format='%Y%m%d')
-        df.set_index(date_index, inplace=True)
-        df = df.sort_index(ascending=False)
+    # 排序
+    date_index = pd.to_datetime(df['trade_date'], format='%Y%m%d')
+    df.set_index(date_index, inplace=True)
+    df = df.sort_index(ascending=False)
 
-        # 去重
-        df = df.drop_duplicates(subset='trade_date', keep='first')
+    # 去重
+    df = df.drop_duplicates(subset='trade_date', keep='first')
 
     df.to_csv(file_path, index=False)
