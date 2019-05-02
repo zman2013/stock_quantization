@@ -9,14 +9,14 @@ sys.path.append("../..")
 import setting
 
 # 目录
-dir_path = setting.root_dir + '/money_flow_north_south/'
+dir_path = setting.root_dir + '/margin/'
 if os.path.exists(dir_path) == False:
     os.makedirs(dir_path)
 
 # 文件
-file_path = dir_path + 'money_flow.history'
+file_path = dir_path + 'margin.history'
 
-# 加载资金流向数据
+# 加载融资融券数据
 def load(start_date):
     df = None
     try:
@@ -25,7 +25,7 @@ def load(start_date):
         df.set_index(date_index, inplace=True)
 
     except:
-        print( 'load stock daily price from file failed')
+        print( 'load margin data from file failed')
 
     if start_date is not None:
         start_date = datetime.datetime.strptime(start_date, '%Y%m%d').date()
@@ -41,7 +41,7 @@ def load(start_date):
     return df
 
 
-# 保存资金流向数据
+# 保存融资融券数据
 def save(df):
     old_df = load(start_date=None)
     if old_df is not None:

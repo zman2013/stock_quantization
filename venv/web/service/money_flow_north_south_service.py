@@ -59,18 +59,18 @@ def download():
     today = datetime.datetime.today().date()
     # 起始日期
     money_flow_df = money_flow_north_south_repo.load(start_date=None)
-    start_date = '20150101'
+    start_date = '20160101'
     if money_flow_df is not None:
         start_date = money_flow_df.iloc[0]['trade_date']
     start_date = datetime.datetime.strptime(start_date, '%Y%m%d').date()
     # 有效日期
     dates = index_service.load_available_dates()
+
     # 数据集合
     cash_df = None
-
     for date in dates:
         # 小于起始日志 => 忽略
-        if date < start_date:
+        if date <= start_date:
             continue
 
         try:
