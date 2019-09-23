@@ -10,7 +10,7 @@ def calculate_warning_point(pe_df):
     sell_index = []
 
     # 从最早时间点向后遍历股票，遇到关键点位就进行操作
-    for index in range(len(pe_df) - 480, 0, -1):
+    for index in range(len(pe_df) - 480, -1, -1):
         data = pe_df.iloc[index]
         result = check_point(index, pe_df)
         if result == 'buy':

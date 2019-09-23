@@ -68,6 +68,7 @@ def select_by_quarter():
             for income_df_index, income_df_line in income_df.iterrows():
                 # 净利润小于1亿，忽略
                 if income_df_line['n_income'] < 100000000:
+                    print("income < 100m stock[%s]" % ts_code)
                     break
                 if income_df_line['yoy_quarter_total_revenue'] < 10 \
                         or income_df_line['yoy_quarter_total_profit'] < 10 \

@@ -78,7 +78,7 @@ def analyse(stock_code, sh_index_code, sz_index_code, stock_df, sh_index_df, sz_
     sell_price = []
 
     # 从最早时间点向后遍历股票，遇到关键点位就进行操作
-    for index in range(len(stock_df)-80, 0, -1):
+    for index in range(len(stock_df)-80, -1, -1):
         data = stock_df.iloc[index]
 
         sh_index_check_result = check_point( index, sh_index_df)
